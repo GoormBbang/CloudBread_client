@@ -1,5 +1,5 @@
 import React from "react";
-import { TouchableOpacity, Text } from "react-native";
+import { Pressable, Text } from "react-native";
 
 interface ButtonProps {
   text: string; // 버튼에 표시될 텍스트
@@ -29,16 +29,15 @@ function Button({
   const disabledStyle = disabled ? "opacity-80" : "";
 
   return (
-    <TouchableOpacity
+    <Pressable
       className={`py-4 rounded-md items-center justify-center ${className} w-full ${style[variant].background} ${disabledStyle}`}
       onPress={onPress}
       disabled={disabled}
-      activeOpacity={0.7}
     >
       <Text className={`text-base font-semibold ${style[variant].color} `}>
         {text}
       </Text>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 
