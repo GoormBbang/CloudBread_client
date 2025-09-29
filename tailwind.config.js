@@ -9,6 +9,7 @@ module.exports = {
         "sub-green": "#89B9AD", // 보조 색상
         "accent-cyan": "#4ECDC4", // 강조 색상
         "light-pink": "#F9C4D4", // 연한 배경 핑크(보통 30%로 사용)
+        "light-pink-2":"#FFE2E2",
         "text-gray": "#E5BBB5", // 텍스트용 회색
         "btn-pink": "#F3F4F6", //취소 버튼같은 핑크
         "back-gray": "#E7E2E2", // 배경/탭/그래프 배경될 회색

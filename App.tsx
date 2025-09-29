@@ -1,12 +1,15 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
+import { View} from "react-native";
 import RootNavigator from "./src/navigation/RootNavigator";
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <RootNavigator />
-    </NavigationContainer>
+    <View className="flex-1" style={{ backgroundColor: '#ffffff' }}>
+      <NavigationContainer>
+        <RootNavigator />
+      </NavigationContainer>
+    </View>
   );
 }
 
