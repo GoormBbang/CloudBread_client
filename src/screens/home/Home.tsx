@@ -1,12 +1,15 @@
-import { User2 } from "lucide-react-native";
+import { CloudSun, Moon, RefreshCcw, RefreshCw, Sun, User2 } from "lucide-react-native";
 import React from "react";
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, ScrollView } from "react-native";
 import Container from "../../components/common/Container";
 import PercentageBar from "../../components/common/PercentageBar";
 
 export default function Home() {
   return (
-    <View className="flex-1 justify-center w-full h-full bg-white">
+    <ScrollView 
+      className="flex-1 bg-white mt-10"
+      showsVerticalScrollIndicator={false}
+    >
       <View className="w-full h-20 bg-light-pink-2 flex flex-row items-center gap-2 px-4">
         <User2 size={30} />
         <View className="flex-col">
@@ -57,7 +60,120 @@ export default function Home() {
              </View>
            </Container>
         </View>
-           
-    </View>
+           <View className="px-4 mt-4 w-full flex-row items-center justify-between">
+            <Text className="text-lg mb-[6px]">오늘의 AI 추천 식단</Text>
+            <View className="flex-row items-center"><RefreshCw size={12} strokeWidth={3}  color="#e46592" className="mr-1" />
+             <Text className="text-[#4b5563] text-[14px]">새로고침</Text></View>
+            
+           </View>
+
+           <View className="px-4 mt-4 w-full">
+
+           <Container className="mb-4">
+            <View className="flex-row items-center justify-between w-full">
+            <View className="flex-row items-center mb-2">
+            <Sun size={14} strokeWidth={4}  color="#e46592" className="mr-1" />
+            <Text className="text-[#11827] text-[16px]">아침</Text>
+            </View>
+            <View className="flex-row items-center justify-between w-min px-2 py-1.5 bg-[#f9c4d44d] rounded-lg">
+              <Text className="text-[#1f2937] text-[12px]">520kcal</Text>
+            </View>
+            </View>
+            <View className="flex-row items-center mb-2">
+              <View className='w-12 h-12 bg-[#89b9ad] rounded-[4px] flex items-center justify-center mr-2'><Text className="text-white text-[12px]">밥</Text></View>
+            <View className="flex-col gap-1">
+              <Text>현미밥</Text>
+              <Text className="text-[#4b5563] text-[12px]">1공기(210g)</Text>
+            </View>
+            </View>
+            <View className="flex-row items-center mb-2">
+              <View className='w-12 h-12 bg-[#89b9ad] rounded-[4px] flex items-center justify-center mr-2'><Text className="text-white text-[12px]">밥</Text></View>
+            <View className="flex-col gap-1">
+              <Text>현미밥</Text>
+              <Text className="text-[#4b5563] text-[12px]">1공기(210g)</Text>
+            </View>
+            </View>
+            <View className="flex-row items-center mb-2">
+              <View className='w-12 h-12 bg-[#89b9ad] rounded-[4px] flex items-center justify-center mr-2'><Text className="text-white text-[12px]">밥</Text></View>
+            <View className="flex-col gap-1">
+              <Text>현미밥</Text>
+              <Text className="text-[#4b5563] text-[12px]">1공기(210g)</Text>
+            </View>
+            </View>
+           </Container>
+
+           <Container className="mb-4">
+            <View className="flex-row items-center justify-between w-full">
+            <View className="flex-row items-center mb-2">
+            <CloudSun size={14} strokeWidth={3.5}  color="#e46592" className="mr-1" />
+            <Text className="text-[#11827] text-[16px]">점심</Text>
+            </View>
+            <View className="flex-row items-center justify-between w-min px-2 py-1.5 bg-[#f9c4d44d] rounded-lg">
+              <Text className="text-[#1f2937] text-[12px]">520kcal</Text>
+            </View>
+            </View>
+            <View className="flex-row items-center mb-2">
+              <View className='w-12 h-12 bg-[#89b9ad] rounded-[4px] flex items-center justify-center mr-2'><Text className="text-white text-[12px]">밥</Text></View>
+            <View className="flex-col gap-1">
+              <Text>현미밥</Text>
+              <Text className="text-[#4b5563] text-[12px]">1공기(210g)</Text>
+            </View>
+            </View>
+            <View className="flex-row items-center mb-2">
+              <View className='w-12 h-12 bg-[#89b9ad] rounded-[4px] flex items-center justify-center mr-2'><Text className="text-white text-[12px]">밥</Text></View>
+            <View className="flex-col gap-1">
+              <Text>현미밥</Text>
+              <Text className="text-[#4b5563] text-[12px]">1공기(210g)</Text>
+            </View>
+            </View>
+            <View className="flex-row items-center mb-2">
+              <View className='w-12 h-12 bg-[#89b9ad] rounded-[4px] flex items-center justify-center mr-2'><Text className="text-white text-[12px]">밥</Text></View>
+            <View className="flex-col gap-1">
+              <Text>현미밥</Text>
+              <Text className="text-[#4b5563] text-[12px]">1공기(210g)</Text>
+            </View>
+            </View>
+           </Container>
+
+           <Container className="mb-4">
+            <View className="flex-row items-center justify-between w-full">
+            <View className="flex-row items-center mb-2">
+            <Moon size={14} strokeWidth={3.5}  color="#e46592" className="mr-1" />
+            <Text className="text-[#11827] text-[16px]">저녁</Text>
+            </View>
+            <View className="flex-row items-center justify-between w-min px-2 py-1.5 bg-[#f9c4d44d] rounded-lg">
+              <Text className="text-[#1f2937] text-[12px]">520kcal</Text>
+            </View>
+            </View>
+            <View className="flex-row items-center mb-2">
+              <View className='w-12 h-12 bg-[#89b9ad] rounded-[4px] flex items-center justify-center mr-2'><Text className="text-white text-[12px]">밥</Text></View>
+            <View className="flex-col gap-1">
+              <Text>현미밥</Text>
+              <Text className="text-[#4b5563] text-[12px]">1공기(210g)</Text>
+            </View>
+            </View>
+            <View className="flex-row items-center mb-2">
+              <View className='w-12 h-12 bg-[#89b9ad] rounded-[4px] flex items-center justify-center mr-2'><Text className="text-white text-[12px]">밥</Text></View>
+            <View className="flex-col gap-1">
+              <Text>현미밥</Text>
+              <Text className="text-[#4b5563] text-[12px]">1공기(210g)</Text>
+            </View>
+            </View>
+            <View className="flex-row items-center mb-2">
+              <View className='w-12 h-12 bg-[#89b9ad] rounded-[4px] flex items-center justify-center mr-2'><Text className="text-white text-[12px]">밥</Text></View>
+            <View className="flex-col gap-1">
+              <Text>현미밥</Text>
+              <Text className="text-[#4b5563] text-[12px]">1공기(210g)</Text>
+            </View>
+            </View>
+           </Container>
+
+
+
+
+
+
+           </View>
+    </ScrollView>
   );
 }
