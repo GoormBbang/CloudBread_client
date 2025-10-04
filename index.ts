@@ -1,4 +1,10 @@
 import { registerRootComponent } from "expo";
+import { Platform } from "react-native";
+
+// 웹에서만 CSS 로드
+if (Platform.OS === 'web') {
+  require('./app.css');
+}
 
 import App from "./App";
 
