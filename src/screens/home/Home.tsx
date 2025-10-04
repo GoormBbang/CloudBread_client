@@ -1,36 +1,38 @@
 import { CloudSun, Moon, RefreshCcw, RefreshCw, Sun, User2 } from "lucide-react-native";
 import React from "react";
-import { View, Text, Image, ScrollView } from "react-native";
+import { View, Text, Image, ScrollView, StyleSheet, Platform } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Container from "../../components/common/Container";
 import PercentageBar from "../../components/common/PercentageBar";
 
 export default function Home() {
   return (
-    <ScrollView 
-      className="flex-1 bg-white mt-10"
-      showsVerticalScrollIndicator={false}
-    >
-      <View className="w-full h-20 bg-light-pink-2 flex flex-row items-center gap-2 px-4">
-        <User2 size={30} />
-        <View className="flex-col">
-        <Text className="text-base font-regular">김지연님</Text>
-        <Text className="text-sm text-gray-500">임신 24주차</Text>
+    <SafeAreaView style={styles.safeArea} edges={Platform.OS === 'web' ? [] : ['top']}>
+      <ScrollView 
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
+      <View style={styles.header}>
+        <User2 size={30} color="#000" />
+        <View style={styles.headerText}>
+          <Text style={styles.userName}>김지연님</Text>
+          <Text style={styles.weekInfo}>임신 24주차</Text>
         </View>
       </View>
-      <View className="px-4 mt-4 w-full">
-          <Text className="text-lg mb-[6px]">이번 주차 팁!</Text>
-           <View className="flex-row items-center justify-between w-full px-8 gap-3 mb-10">
-            <View className="flex-col items-center">
-            <Image source={require("../../../assets/image/home/home-baby-info.png")} className="w-11 h-11" resizeMode="contain" />
-            <Text className="text-[12px] font-light text-[#4b5563] mt-1">태아정보</Text>
+      <View style={styles.section}>
+          <Text style={styles.sectionTitle}>이번 주차 팁!</Text>
+           <View style={styles.tipsContainer}>
+            <View style={styles.tipItem}>
+              <Image source={require("../../../assets/image/home/home-baby-info.png")} style={styles.tipImage} resizeMode="contain" />
+              <Text style={styles.tipText}>태아정보</Text>
             </View>
-            <View className="flex-col items-center">
-            <Image source={require("../../../assets/image/home/home-health-info.png")} className="w-11 h-11" resizeMode="contain" />
-            <Text className="text-[12px] font-light text-[#4b5563] mt-1">건강정보</Text>
+            <View style={styles.tipItem}>
+              <Image source={require("../../../assets/image/home/home-health-info.png")} style={styles.tipImage} resizeMode="contain" />
+              <Text style={styles.tipText}>건강정보</Text>
             </View>
-            <View className="flex-col items-center">
-            <Image source={require("../../../assets/image/home/home-food-info.png")} className="w-11 h-11" resizeMode="contain" />
-            <Text className="text-[12px] font-light text-[#4b5563] mt-1">영양정보</Text>
+            <View style={styles.tipItem}>
+              <Image source={require("../../../assets/image/home/home-food-info.png")} style={styles.tipImage} resizeMode="contain" />
+              <Text style={styles.tipText}>영양정보</Text>
             </View>
           </View>
            <Container className="w-full px-4">
@@ -174,6 +176,70 @@ export default function Home() {
 
 
            </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+  },
+  scrollView: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+  },
+  header: {
+    width: '100%',
+    height: 80,
+    backgroundColor: '#FFE2E2',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    gap: 8,
+  },
+  headerText: {
+    flexDirection: 'column',
+  },
+  userName: {
+    fontSize: 16,
+    fontWeight: '400',
+    color: '#000',
+  },
+  weekInfo: {
+    fontSize: 14,
+    color: '#6b7280',
+  },
+  section: {
+    paddingHorizontal: 16,
+    marginTop: 16,
+    width: '100%',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    marginBottom: 6,
+    color: '#000',
+  },
+  tipsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginBottom: 40,
+  },
+  tipItem: {
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  tipImage: {
+    width: 44,
+    height: 44,
+  },
+  tipText: {
+    fontSize: 12,
+    fontWeight: '300',
+    color: '#4b5563',
+    marginTop: 4,
+  }
+});
