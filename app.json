@@ -25,6 +25,9 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "apiUrl": "http://cloudbread.133.186.213.185.nip.io/api/"
     }
   }
 }
