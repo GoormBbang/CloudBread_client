@@ -1,22 +1,53 @@
-import { CloudSun, Moon, RefreshCcw, RefreshCw, Sun, User2 } from "lucide-react-native";
-import React from "react";
-import { View, Text, Image, ScrollView } from "react-native";
+import { ChevronRight, CloudSun, Moon, RefreshCw, Sun, User2 } from "lucide-react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
 import Container from "../../components/common/Container";
 import PercentageBar from "../../components/common/PercentageBar";
+import { getTodayNutrition } from "../../api/services/home";
+import { NutritionStats } from "../../api/types/common";
 
-export default function Home() {
+interface HomeProps {
+  navigation: any;
+}
+
+export default function Home({ navigation }: HomeProps) {
+  const [nutritionData, setNutritionData] = useState<NutritionStats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // useEffect(() => {
+  //   const fetchTodayNutrition = async () => {
+  //     try {
+  //       setLoading(true);
+  //       const data = await getTodayNutrition();
+  //       setNutritionData(data);
+  //       console.log('✅ 영양 데이터:', data);
+  //     } catch (error) {
+  //       console.error('❌ API 호출 실패:', error);
+  //       // 에러 처리 로직 추가 가능 (예: 토스트 메시지, 기본값 설정 등)
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchTodayNutrition();
+  // }, []);
+
   return (
     <ScrollView 
       className="flex-1 bg-white mt-10"
       showsVerticalScrollIndicator={false}
     >
-      <View className="w-full h-20 bg-light-pink-2 flex flex-row items-center gap-2 px-4">
+      
+      <TouchableOpacity className="w-full h-20 bg-light-pink-2 flex flex-row items-center gap-2 px-4 justify-between" onPress={() => navigation.navigate("Profile")}>
+        <View className="flex-row items-center gap-2">
         <User2 size={30} />
         <View className="flex-col">
         <Text className="text-base font-regular">김지연님</Text>
         <Text className="text-sm text-gray-500">임신 24주차</Text>
         </View>
-      </View>
+        </View>
+        <ChevronRight size={16} strokeWidth={3} color="black" />
+      </TouchableOpacity>
+     
       <View className="px-4 mt-4 w-full">
           <Text className="text-lg mb-[6px]">이번 주차 팁!</Text>
            <View className="flex-row items-center justify-between w-full px-8 gap-3 mb-10">
@@ -40,19 +71,19 @@ export default function Home() {
              </View>
              <View className="flex-row justify-around items-center">
                <PercentageBar 
-                 percentage={75} 
+                 percentage={nutritionData?.calories.percentage || 0} 
                  size={70} 
                  color="#E46592" 
                  label="칼로리"
                />
                <PercentageBar 
-                 percentage={60} 
+                 percentage={nutritionData?.protein.percentage || 0} 
                  size={70} 
                  color="#89B9AD" 
                  label="단백질"
                />
                <PercentageBar 
-                 percentage={85} 
+                 percentage={nutritionData?.carbohydrates.percentage || 0} 
                  size={70}  
                  color="#4ECDC4" 
                  label="탄수화물"
@@ -62,18 +93,34 @@ export default function Home() {
         </View>
            <View className="px-4 mt-4 w-full flex-row items-center justify-between">
             <Text className="text-lg mb-[6px]">오늘의 AI 추천 식단</Text>
-            <View className="flex-row items-center"><RefreshCw size={12} strokeWidth={3}  color="#e46592" className="mr-1" />
-             <Text className="text-[#4b5563] text-[14px]">새로고침</Text></View>
+            <TouchableOpacity className="flex-row items-center" onPress={() => {
+              const fetchTodayNutrition = async () => {
+                try {
+                  setLoading(true);
+                  const data = await getTodayNutrition();
+                  setNutritionData(data);
+                } catch (error) {
+                  console.error('❌ API 호출 실패:', error);
+                } finally {
+                  setLoading(false);
+                }
+              };
+              fetchTodayNutrition();
+            }}>
+              <RefreshCw size={12} strokeWidth={3} color="#e46592" style={{ marginRight: 4 }} />
+              <Text className="text-[#4b5563] text-[14px]">새로고침</Text>
+            </TouchableOpacity>
             
            </View>
 
            <View className="px-4 mt-4 w-full">
 
-           <Container className="mb-4">
+           <View className="mb-6">
+           <Container>
             <View className="flex-row items-center justify-between w-full">
             <View className="flex-row items-center mb-2">
-            <Sun size={14} strokeWidth={4}  color="#e46592" className="mr-1" />
-            <Text className="text-[#11827] text-[16px]">아침</Text>
+            <Sun size={14} strokeWidth={4} color="#e46592" style={{ marginRight: 4 }} />
+            <Text className="text-[#118270] text-[16px]">아침</Text>
             </View>
             <View className="flex-row items-center justify-between w-min px-2 py-1.5 bg-[#f9c4d44d] rounded-lg">
               <Text className="text-[#1f2937] text-[12px]">520kcal</Text>
@@ -101,12 +148,14 @@ export default function Home() {
             </View>
             </View>
            </Container>
+           </View>
 
-           <Container className="mb-4">
+           <View className="mb-6">
+           <Container>
             <View className="flex-row items-center justify-between w-full">
             <View className="flex-row items-center mb-2">
-            <CloudSun size={14} strokeWidth={3.5}  color="#e46592" className="mr-1" />
-            <Text className="text-[#11827] text-[16px]">점심</Text>
+            <CloudSun size={14} strokeWidth={3.5} color="#e46592" style={{ marginRight: 4 }} />
+            <Text className="text-[#118270] text-[16px]">점심</Text>
             </View>
             <View className="flex-row items-center justify-between w-min px-2 py-1.5 bg-[#f9c4d44d] rounded-lg">
               <Text className="text-[#1f2937] text-[12px]">520kcal</Text>
@@ -134,12 +183,14 @@ export default function Home() {
             </View>
             </View>
            </Container>
+           </View>
 
-           <Container className="mb-4">
+           <View className="mb-6">
+           <Container>
             <View className="flex-row items-center justify-between w-full">
             <View className="flex-row items-center mb-2">
-            <Moon size={14} strokeWidth={3.5}  color="#e46592" className="mr-1" />
-            <Text className="text-[#11827] text-[16px]">저녁</Text>
+            <Moon size={14} strokeWidth={3.5} color="#e46592" style={{ marginRight: 4 }} />
+            <Text className="text-[#118270] text-[16px]">저녁</Text>
             </View>
             <View className="flex-row items-center justify-between w-min px-2 py-1.5 bg-[#f9c4d44d] rounded-lg">
               <Text className="text-[#1f2937] text-[12px]">520kcal</Text>
@@ -167,6 +218,7 @@ export default function Home() {
             </View>
             </View>
            </Container>
+           </View>
 
 
 
