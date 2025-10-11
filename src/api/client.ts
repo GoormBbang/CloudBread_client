@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuthStore } from '../store/authStore';
 
 // API 기본 설정
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
@@ -18,10 +19,14 @@ const apiClient: AxiosInstance = axios.create({
 // 요청 인터셉터
 apiClient.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
+    const {accessToken} = useAuthStore.getState();
     // 토큰이 있다면 헤더에 추가
-    const token = await getAuthToken();
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
+    //const token = await getAuthToken();
+    // if (token && config.headers) {
+    //   config.headers.Authorization = `Bearer ${token}`;
+    // }
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
     
     // 요청 로깅 (개발 환경에서만)
