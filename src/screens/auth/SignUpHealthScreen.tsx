@@ -52,7 +52,7 @@ export default function SignUpHealthScreen({ navigation }: any) {
   };
   const goToNextStep = () => {
     // 다음 스텝으로 이동
-    navigation.navigate("Step3");
+    navigation.replace("Tab");
   };
   // justify-between  items-center p-8
   return (
