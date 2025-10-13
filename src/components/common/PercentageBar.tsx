@@ -64,8 +64,9 @@ export default function PercentageBar({
           }}
         >
           <Text style={{ fontSize: 16, fontWeight: '600', color: '#000000', textAlign: 'center' }}>
-            {percentage}%
+            {percentage}
           </Text>
+         
         </View>
       </View>
       {label && (

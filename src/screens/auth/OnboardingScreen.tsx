@@ -18,7 +18,7 @@ const iconHealth = require("../../../assets/icons/auth/onboarding-health.png");
 const iconBaby = require("../../../assets/icons/auth/onboarding-baby.png");
 
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000";
 const DEEP_LINK_SCHEME = "ten-months-table://";
 const OAUTH_URLS: Record<AuthType, string> = {
   KAKAO: `${API_BASE_URL}/oauth2/authorization/kakao`,

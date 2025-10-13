@@ -1,11 +1,10 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
-import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuthStore } from '../store/authStore';
 
 // API 기본 설정
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
-const API_TIMEOUT = 10000; // 10초
+const API_TIMEOUT = 3000; // 3초 (백엔드 서버가 없을 때 빠르게 실패)
 
 // Axios 인스턴스 생성
 const apiClient: AxiosInstance = axios.create({
@@ -28,15 +27,16 @@ apiClient.interceptors.request.use(
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
+    // console.log('accessToken:', accessToken);
     
-    // 요청 로깅 (개발 환경에서만)
-    if (__DEV__) {
-      console.log('API Request:', {
-        method: config.method?.toUpperCase(),
-        url: config.url,
-        data: config.data,
-      });
-    }
+    // // 요청 로깅 (개발 환경에서만)
+    // if (__DEV__) {
+    //   console.log('API Request:', {
+    //     method: config.method?.toUpperCase(),
+    //     url: config.url,
+    //     data: config.data,
+    //   });
+    // }
     
     return config;
   },
@@ -50,13 +50,13 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => {
     // 응답 로깅 (개발 환경에서만)
-    if (__DEV__) {
-      console.log('✅ API Response:', {
-        status: response.status,
-        url: response.config.url,
-        data: response.data,
-      });
-    }
+    // if (__DEV__) {
+    //   console.log('✅ API Response:', {
+    //     status: response.status,
+    //     url: response.config.url,
+    //     data: response.data,
+    //   });
+    // }
     
     return response;
   },
