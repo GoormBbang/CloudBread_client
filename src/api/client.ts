@@ -106,25 +106,5 @@ const removeAuthToken = async (): Promise<void> => {
   }
 };
 
-// 서버 연결 상태 확인 함수
-export const checkServerConnection = async (): Promise<boolean> => {
-  try {
-    // 간단한 GET 요청으로 서버 상태 확인
-    const response = await apiClient.get('/health', { timeout: 5000 });
-    console.log('✅ 서버 연결 성공:', response.status);
-    return true;
-  } catch (error) {
-    console.error('❌ 서버 연결 실패:', error);
-    return false;
-  }
-};
-
-// baseURL 정보 출력 함수
-export const getApiInfo = () => {
-  const baseURL = apiClient.defaults.baseURL;
-  console.log('🌐 현재 API BaseURL:', baseURL);
-  return baseURL;
-};
-
 export { setAuthToken, removeAuthToken };
 export default apiClient;
