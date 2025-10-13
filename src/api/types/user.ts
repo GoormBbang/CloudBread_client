@@ -25,15 +25,15 @@ export interface MetaItem {
 }
 
 export interface MetadataResponse {
-  dietTypes: Number[];
-  healthTypes: Number[];
+  dietTypes: MetaItem[];
+  healthTypes: MetaItem[];
   allergies: MetaItem[];
 }
 
 // 건강정보 입력 요청
 export interface UserHealthInfoPayload {
-  dietTypeIds: number[];
-  healthTypeIds: number[];
-  allergyIds: number[];
-  otherHealthFactors: string;
+  dietTypeIds?: number[];
+  healthTypeIds?: number[];
+  allergyIds?: number[];
+  otherHealthFactors?: string;
 }
