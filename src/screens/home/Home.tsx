@@ -3,33 +3,66 @@ import React, { useEffect, useState } from "react";
 import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
 import Container from "../../components/common/Container";
 import PercentageBar from "../../components/common/PercentageBar";
-import { getTodayNutrition } from "../../api/services/home";
-import { NutritionStats } from "../../api/types/common";
+import BabyInfoModal from "../../components/common/BabyInfoModal";
+import { getThisWeekBabyTips, getThisWeekTips, getTodayNutrition, getUserInfo } from "../../api/services/home";
+import { NutrientInfo } from "../../api/types/common";
+import { ThisWeekTipsType, UserInfoType } from "../../api/types/home";
+import MomInfoModal from "../../components/common/MomInfoModal";
+import NutritionInfoModal from "../../components/common/NutritionModal";
+
 
 interface HomeProps {
   navigation: any;
 }
 
 export default function Home({ navigation }: HomeProps) {
-  const [nutritionData, setNutritionData] = useState<NutritionStats | null>(null);
+  const [nutritionData, setNutritionData] = useState<NutrientInfo[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const [userInfo, setUserInfo] = useState<UserInfoType>();
+  const [thisWeekTips, setThisWeekTips] = useState<ThisWeekTipsType>();
+  // const [thisWeekBabyTips, setThisWeekBabyTips] = useState<ThisWeekBabyTipsType>();
+  const [babyInfoModalVisible, setBabyInfoModalVisible] = useState(false);
+  const [momInfoModalVisible, setMomInfoModalVisible] = useState(false);
+  const [nutritionInfoModalVisible, setNutritionInfoModalVisible] = useState(false);
+//프로필 정보 조회 api
+  const fetchUserInfo = async () => {
+    const data = await getUserInfo();
+    if(data.isSuccess) {
+      setUserInfo(data.result);
+    }
+    // setUserInfo(data.result);
+  }
+//이번 주차 팁 전제 조회 api
+  const fetchThisWeekTips = async () => {
+    const data = await getThisWeekTips();
+    if(data.isSuccess) {
+      setThisWeekTips(data.tips);
+    }
+  }
 
-  // useEffect(() => {
-  //   const fetchTodayNutrition = async () => {
-  //     try {
-  //       setLoading(true);
-  //       const data = await getTodayNutrition();
-  //       setNutritionData(data);
-  //       console.log('✅ 영양 데이터:', data);
-  //     } catch (error) {
-  //       console.error('❌ API 호출 실패:', error);
-  //       // 에러 처리 로직 추가 가능 (예: 토스트 메시지, 기본값 설정 등)
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   fetchTodayNutrition();
-  // }, []);
+//오늘의 영양 분석 api
+  const fetchTodayNutrition = async () => {
+    try {
+      setLoading(true);
+      const data = await getTodayNutrition();
+      if(data.isSuccess) {
+        setNutritionData(data.result.nutrients);
+      }
+    } catch (error) {
+      console.error('❌ API 호출 실패:', error);
+      // 에러 처리 로직 추가 가능 (예: 토스트 메시지, 기본값 설정 등)
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // fetchThisWeekTips();
+    // fetchThisWeekBabyTips();
+    fetchUserInfo();
+    fetchTodayNutrition();
+  }, []);
+
 
   return (
     <ScrollView 
@@ -39,10 +72,10 @@ export default function Home({ navigation }: HomeProps) {
       
       <TouchableOpacity className="w-full h-20 bg-light-pink-2 flex flex-row items-center gap-2 px-4 justify-between" onPress={() => navigation.navigate("Profile")}>
         <View className="flex-row items-center gap-2">
-        <User2 size={30} />
+        <Image source={{ uri: userInfo?.profileImageUrl }} className="w-10 h-10 rounded-full" resizeMode="contain" />
         <View className="flex-col">
-        <Text className="text-base font-regular">김지연님</Text>
-        <Text className="text-sm text-gray-500">임신 24주차</Text>
+        <Text className="text-base font-regular">{userInfo?.nickname}님</Text>
+        <Text className="text-sm text-gray-500">{userInfo?.dueDate}주차</Text>
         </View>
         </View>
         <ChevronRight size={16} strokeWidth={3} color="black" />
@@ -51,42 +84,58 @@ export default function Home({ navigation }: HomeProps) {
       <View className="px-4 mt-4 w-full">
           <Text className="text-lg mb-[6px]">이번 주차 팁!</Text>
            <View className="flex-row items-center justify-between w-full px-8 gap-3 mb-10">
-            <View className="flex-col items-center">
+            <TouchableOpacity 
+              className="flex-col items-center"
+              onPress={() => setBabyInfoModalVisible(true)}
+            >
             <Image source={require("../../../assets/image/home/home-baby-info.png")} className="w-11 h-11" resizeMode="contain" />
             <Text className="text-[12px] font-light text-[#4b5563] mt-1">태아정보</Text>
-            </View>
+            </TouchableOpacity>
             <View className="flex-col items-center">
+              <TouchableOpacity 
+              className="flex-col items-center"
+              onPress={() => setMomInfoModalVisible(true)}
+            >
             <Image source={require("../../../assets/image/home/home-health-info.png")} className="w-11 h-11" resizeMode="contain" />
             <Text className="text-[12px] font-light text-[#4b5563] mt-1">건강정보</Text>
+            </TouchableOpacity>
             </View>
             <View className="flex-col items-center">
+              <TouchableOpacity 
+              className="flex-col items-center"
+              onPress={() => setNutritionInfoModalVisible(true)}
+            >
             <Image source={require("../../../assets/image/home/home-food-info.png")} className="w-11 h-11" resizeMode="contain" />
             <Text className="text-[12px] font-light text-[#4b5563] mt-1">영양정보</Text>
+            </TouchableOpacity>
             </View>
           </View>
            <Container className="w-full px-4">
              <View className="flex-row justify-between items-center mb-4">
+              <View className="flex-row items-center gap-2">
                <Text className="text-base font-regular text-[16px] text-black">오늘의 영양 분석</Text>
+               <Text className="text-[12px] font-light text-[#6b7280]">단위: %</Text>
+               </View>
                <Text className="text-[12px] font-light text-[#6b7280]">2025.09.20</Text>
              </View>
              <View className="flex-row justify-around items-center">
                <PercentageBar 
-                 percentage={nutritionData?.calories.percentage || 0} 
+                 percentage={nutritionData?.[0]?.unit || 0} 
                  size={70} 
                  color="#E46592" 
-                 label="칼로리"
+                 label={nutritionData?.[0]?.name || "엽산"}
                />
                <PercentageBar 
-                 percentage={nutritionData?.protein.percentage || 0} 
+                 percentage={nutritionData?.[1]?.unit || 0} 
                  size={70} 
                  color="#89B9AD" 
-                 label="단백질"
+                 label={nutritionData?.[1]?.name || "칼슘"}
                />
                <PercentageBar 
-                 percentage={nutritionData?.carbohydrates.percentage || 0} 
+                 percentage={nutritionData?.[2]?.unit || 0} 
                  size={70}  
                  color="#4ECDC4" 
-                 label="탄수화물"
+                 label={nutritionData?.[2]?.name || "철분"}
                />
              </View>
            </Container>
@@ -94,18 +143,20 @@ export default function Home({ navigation }: HomeProps) {
            <View className="px-4 mt-4 w-full flex-row items-center justify-between">
             <Text className="text-lg mb-[6px]">오늘의 AI 추천 식단</Text>
             <TouchableOpacity className="flex-row items-center" onPress={() => {
-              const fetchTodayNutrition = async () => {
-                try {
-                  setLoading(true);
-                  const data = await getTodayNutrition();
-                  setNutritionData(data);
-                } catch (error) {
-                  console.error('❌ API 호출 실패:', error);
-                } finally {
-                  setLoading(false);
-                }
-              };
-              fetchTodayNutrition();
+              // 백엔드 서버가 실행되지 않아 임시로 비활성화
+              console.log('새로고침 버튼 클릭 - API 호출 비활성화됨');
+              // const fetchTodayNutrition = async () => {
+              //   try {
+              //     setLoading(true);
+              //     const data = await getTodayNutrition();
+              //     setNutritionData(data);
+              //   } catch (error) {
+              //     console.error('❌ API 호출 실패:', error);
+              //   } finally {
+              //     setLoading(false);
+              //   }
+              // };
+              // fetchTodayNutrition();
             }}>
               <RefreshCw size={12} strokeWidth={3} color="#e46592" style={{ marginRight: 4 }} />
               <Text className="text-[#4b5563] text-[14px]">새로고침</Text>
@@ -226,6 +277,25 @@ export default function Home({ navigation }: HomeProps) {
 
 
            </View>
+
+      {/* 태아 정보 모달 */}
+      <BabyInfoModal
+        visible={babyInfoModalVisible}
+        onClose={() => setBabyInfoModalVisible(false)}
+        weekNumber={userInfo?.dueDate || 20}
+      />
+      {/* 엄마 정보 모달 */}
+      <MomInfoModal
+        visible={momInfoModalVisible}
+        onClose={() => setMomInfoModalVisible(false)}
+        weekNumber={userInfo?.dueDate || 20}
+      />
+      {/* 영양 정보 모달 */}
+      <NutritionInfoModal
+        visible={nutritionInfoModalVisible}
+        onClose={() => setNutritionInfoModalVisible(false)}
+        weekNumber={userInfo?.dueDate || 20}
+      />
     </ScrollView>
   );
 }
