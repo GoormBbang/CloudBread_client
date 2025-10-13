@@ -1,11 +1,12 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
+import { MetaItem } from "../../api/types/user";
 
 type MultiSelectFilterProps = {
   title: string; 
-  items: string[]; 
-  selectedItems: string[]; 
-  onSelectionChange: (selected: string[]) => void;
+  items: MetaItem[]; 
+  selectedItems: number[]; 
+  onSelectionChange: (selectedIds: number[]) => void;
 };
 
 export default function MultiSelectFilter({
@@ -14,18 +15,18 @@ export default function MultiSelectFilter({
   selectedItems,
   onSelectionChange,
 }: MultiSelectFilterProps) {
-  const handlePress = (item: string) => {
+  const handlePress = (id: number) => {
     // 이미 선택된 항목인지 확인
-    const isSelected = selectedItems.includes(item);
+    const isSelected = selectedItems.includes(id);
 
-    let newSelection: string[];
+    let newSelection: number[];
 
     if (isSelected) {
       // 이미 선택된 항목이면 제거
-      newSelection = selectedItems.filter((selected) => selected !== item);
+      newSelection = selectedItems.filter((selected) => selected !== id);
     } else {
       // 선택되지 않은 항목 배열에 추가
-      newSelection = [...selectedItems, item];
+      newSelection = [...selectedItems, id];
     }
 
     // 부모 컴포넌트로 변경된 선택 목록을 전달
@@ -38,12 +39,12 @@ export default function MultiSelectFilter({
 
       <View className="w-full flex-row flex-wrap items-start p-4 border border-gray-200 rounded-xl min-h-[100px]">
         {items.map((item) => {
-          const isSelected = selectedItems.includes(item);
+          const isSelected = selectedItems.includes(item.id);
 
           return (
             <TouchableOpacity
-              key={item}
-              onPress={() => handlePress(item)}
+              key={item.id}
+              onPress={() => handlePress(item.id)}
               className={`
                 p-2 px-4 m-1 rounded-full border
                 ${
@@ -59,7 +60,7 @@ export default function MultiSelectFilter({
                   ${isSelected ? "text-white" : "text-pink-800"}
                 `}
               >
-                {item}
+                {item?.name}
               </Text>
             </TouchableOpacity>
           );

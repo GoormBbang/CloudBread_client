@@ -3,11 +3,13 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import OnboardingScreen from "../screens/auth/OnboardingScreen";
 import SignUpPersonalScreen from "../screens/auth/SignUpPersonalScreen";
 import SignUpHealthScreen from "../screens/auth/SignUpHealthScreen";
+import SignUpSuccessScreen from "../screens/auth/SignUpSuccessScreen";
 
 export type OnboardingStackParamList = {
   Step1: undefined;
   Step2: undefined;
   Step3: undefined;
+  Success:undefined;
 };
 
 const OnboardingStack = createNativeStackNavigator<OnboardingStackParamList>();
@@ -26,6 +28,7 @@ export default function SignUpNavigator() {
       <OnboardingStack.Screen name="Step1" component={OnboardingScreen} />
       <OnboardingStack.Screen name="Step2" component={SignUpPersonalScreen} />
       <OnboardingStack.Screen name="Step3" component={SignUpHealthScreen} />
+      <OnboardingStack.Screen name="Success" component={SignUpSuccessScreen} />
     </OnboardingStack.Navigator>
   );
 }
