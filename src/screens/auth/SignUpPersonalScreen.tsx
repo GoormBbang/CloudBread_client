@@ -83,7 +83,7 @@ export default function SignUpPersonalScreen({ navigation }: any) {
         />
       </View>
       <Button text={isPending ? "저장 중..." : "다음"} 
-          onPress={goToNextStep}  />
+          onPress={handleNextStep}  />
     </View>
   );
 }

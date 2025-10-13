@@ -1,10 +1,10 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { updateUserDetails } from '../api/services/auth';
-import { UserDetailsPayload } from '../api/types/user';
+import { updateUserDetails, updateUserHealthInfo } from '../api/services/auth';
+import { UserDetailsPayload, UserHealthInfoPayload } from '../api/types/user';
+import { getMetadata } from '../api/services/user';
 
-//TODO : 아직 진행중
 export const useUpdateUserDetails = () => {
   const navigation = useNavigation();
   const queryClient = useQueryClient();
@@ -24,5 +24,38 @@ export const useUpdateUserDetails = () => {
       const message = (error as any).response?.data?.message || '정보 업데이트에 실패했습니다.';
       Alert.alert('오류', message);
     },
+  });
+};
+
+export const useUpdateUserHealthInfo = () => {
+  const navigation = useNavigation();
+  //const navigation = useNavigation<RootStackNavigationProp>();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (userData: UserHealthInfoPayload) => updateUserHealthInfo(userData),
+
+    onSuccess: (data) => {
+      console.log('User health info updated successfully:', data);
+      //Alert.alert('성공', '건강정보가 성공적으로 저장되었습니다.');
+      
+      queryClient.invalidateQueries({ queryKey: ['myHealthInfo'] });
+      
+      //navigation.navigate('Tab' as never);
+      //navigation.replace("Tab");
+      navigation.navigate('Success' as never);
+    },
+    onError: (error) => {
+      console.error('❌ Failed to update user details:', error);
+      const message = (error as any).response?.data?.message || '정보 업데이트에 실패했습니다.';
+      Alert.alert('오류', message);
+    },
+  });
+};
+
+export const useGetMetadata = () => {
+  return useQuery({
+    queryKey: ['metadata'], 
+    queryFn: getMetadata, 
   });
 };
