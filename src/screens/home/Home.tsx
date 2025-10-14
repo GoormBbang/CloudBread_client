@@ -3,12 +3,12 @@ import React, { useEffect, useState } from "react";
 import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
 import Container from "../../components/common/Container";
 import PercentageBar from "../../components/common/PercentageBar";
-import BabyInfoModal from "../../components/common/BabyInfoModal";
+import BabyInfoModal from "../../components/common/modal/BabyInfoModal";
 import { getThisWeekBabyTips, getThisWeekTips, getTodayAIRecommendation, getTodayNutrition, getUserInfo } from "../../api/services/home";
 import { NutrientInfo } from "../../api/types/common";
 import { ThisWeekTipsType, UserInfoType } from "../../api/types/home";
-import MomInfoModal from "../../components/common/MomInfoModal";
-import NutritionInfoModal from "../../components/common/NutritionModal";
+import MomInfoModal from "../../components/common/modal/MomInfoModal";
+import NutritionInfoModal from "../../components/common/modal/NutritionModal";
 
 
 interface HomeProps {
@@ -75,11 +75,11 @@ export default function Home({ navigation }: HomeProps) {
 
   return (
     <ScrollView 
-      className="flex-1 bg-white mt-10"
+      className="flex-1 bg-white w-full"
       showsVerticalScrollIndicator={false}
     >
-      
-      <TouchableOpacity className="w-full h-20 bg-light-pink-2 flex flex-row items-center gap-2 px-4 justify-between" onPress={() => navigation.navigate("Profile")}>
+<View className="w-full bg-light-pink-2">
+      <TouchableOpacity className="w-full h-20 flex flex-row items-center gap-2 px-4 justify-between" onPress={() => navigation.navigate("Profile")}>
         <View className="flex-row items-center gap-2">
         <Image source={{ uri: userInfo?.profileImageUrl }} className="w-10 h-10 rounded-full" resizeMode="contain" />
         <View className="flex-col">
@@ -89,6 +89,7 @@ export default function Home({ navigation }: HomeProps) {
         </View>
         <ChevronRight size={16} strokeWidth={3} color="black" />
       </TouchableOpacity>
+      </View>
      
       <View className="px-4 mt-4 w-full">
           <Text className="text-lg mb-[6px]">이번 주차 팁!</Text>
