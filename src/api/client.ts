@@ -27,7 +27,7 @@ apiClient.interceptors.request.use(
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
-    // console.log('accessToken:', accessToken);
+    console.log('accessToken:', accessToken);
     
     // // 요청 로깅 (개발 환경에서만)
     // if (__DEV__) {

@@ -10,7 +10,7 @@ export const getUserInfo = async (): Promise<any> => {
 //오늘의 영양정보
 export const getTodayNutrition = async (): Promise<any> => {
   const response = await apiClient.get<ApiResponse<any>>('/users/me/today-nutrients-stats');
-  console.log('🔑 getTodayNutrition:', response.data);
+  // console.log('🔑 getTodayNutrition:', response.data);
   return response.data;
 };
 
@@ -39,5 +39,12 @@ export const getThisWeekMomTips = async (): Promise<any> => {
 export const getThisWeekNutritionTips = async (): Promise<any> => {
   const response = await apiClient.get<ApiResponse<any>>('/users/me/tip/nutrition');
   // console.log('🔑 getThisWeekNutritionTips:', response.data);
+  return response.data;
+};
+
+//오늘의 AI 추천 식단 조회
+export const getTodayAIRecommendation = async (): Promise<any> => {
+  const response = await apiClient.get<ApiResponse<any>>('/meal-plans/refresh');
+  console.log('🔑 getTodayAIRecommendation:', response.data);
   return response.data;
 };

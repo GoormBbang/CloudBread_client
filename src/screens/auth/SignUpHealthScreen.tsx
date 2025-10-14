@@ -135,7 +135,7 @@ export default function SignUpHealthScreen({ navigation }: any) {
           onChangeText={setOtherHealthFactors} 
         />
       </View>
-      <Button text="완료" onPress={goToNextStep} />
+      <Button text="완료" onPress={goToNextStep} className="h-12" />
     </ScrollView>
     </KeyboardAvoidingView>
   );

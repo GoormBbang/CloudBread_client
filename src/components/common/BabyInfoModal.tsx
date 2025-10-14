@@ -62,8 +62,7 @@ export default function BabyInfoModal({ visible, onClose, weekNumber = 20 }: Bab
   //이번 주차 태아 팁 조회 api
   const fetchThisWeekBabyTips = async () => {
     const data = await getThisWeekBabyTips();
-    console.log('🔑 fetchThisWeekBabyTips:', data.tips[0]);
-
+    // console.log('🔑 fetchThisWeekBabyTips:', data.tips[0]);
       setThisWeekBabyTips(data.tips[0]);
  
   }

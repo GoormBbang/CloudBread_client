@@ -62,8 +62,7 @@ export default function MomInfoModal({ visible, onClose, weekNumber = 20 }: MomI
   //이번 주차 태아 팁 조회 api
   const fetchThisWeekMomTips = async () => {
     const data = await getThisWeekMomTips();
-    console.log('🔑 fetchThisWeekMomTips:', data.tips[0]);
-
+    // console.log('🔑 fetchThisWeekMomTips:', data.tips[0]);
       setThisWeekMomTips(data.tips[0]);
  
   }
