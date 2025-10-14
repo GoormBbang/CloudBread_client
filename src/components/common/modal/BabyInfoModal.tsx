@@ -11,9 +11,9 @@ import {
   Image,
 } from 'react-native';
 import { X } from 'lucide-react-native';
-import Border from './Border';
-import { getThisWeekBabyTips } from '../../api/services/home';
-import { ThisWeekTipType } from '../../api/types/home';
+import Border from '../Border';
+import { getThisWeekBabyTips } from '../../../api/services/home';
+import { ThisWeekTipType } from '../../../api/types/home';
 
 
 interface BabyInfoModalProps {
@@ -94,7 +94,7 @@ export default function BabyInfoModal({ visible, onClose, weekNumber = 20 }: Bab
           {/* 헤더 */}
           <View className="flex-row items-center justify-between p-6 mt-4">
            <View className="flex-row items-center gap-2">
-           <Image source={require("../../../assets/image/home/home-baby-info.png")} className="w-12 h-12" resizeMode="contain" />
+           <Image source={require("../../../../assets/image/home/home-baby-info.png")} className="w-12 h-12" resizeMode="contain" />
            <View>
             <Text className="text-xl font-semibold text-gray-800">
               태아 정보

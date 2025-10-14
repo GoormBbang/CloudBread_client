@@ -11,12 +11,12 @@ import {
   Image,
 } from 'react-native';
 import { X } from 'lucide-react-native';
-import Border from './Border';
-import { getThisWeekMomTips } from '../../api/services/home';
-import { ThisWeekTipType } from '../../api/types/home';
+import Border from '../Border';
+import { getThisWeekBabyTips, getThisWeekNutritionTips } from '../../../api/services/home';
+import { ThisWeekTipType } from '../../../api/types/home';
 
 
-interface MomInfoModalProps {
+interface NutritionInfoModalProps {
   visible: boolean;
   onClose: () => void;
   weekNumber?: number;
@@ -24,8 +24,8 @@ interface MomInfoModalProps {
 
 const { height: screenHeight } = Dimensions.get('window');
 
-export default function MomInfoModal({ visible, onClose, weekNumber = 20 }: MomInfoModalProps) {
-  const [thisWeekMomTips, setThisWeekMomTips] = useState<ThisWeekTipType>();
+export default function NutritionInfoModal({ visible, onClose, weekNumber = 20 }: NutritionInfoModalProps) {
+  const [thisWeekNutritionTips, setThisWeekNutritionTips] = useState<ThisWeekTipType>();
   const slideAnim = useRef(new Animated.Value(screenHeight)).current;
   //화면 높이만큼 아래에 숨겨두고, 보일 때 0으로 이동
 
@@ -60,15 +60,16 @@ export default function MomInfoModal({ visible, onClose, weekNumber = 20 }: MomI
 
 
   //이번 주차 태아 팁 조회 api
-  const fetchThisWeekMomTips = async () => {
-    const data = await getThisWeekMomTips();
-    // console.log('🔑 fetchThisWeekMomTips:', data.tips[0]);
-      setThisWeekMomTips(data.tips[0]);
+  const fetchThisWeekNutritionTips = async () => {
+    const data = await getThisWeekNutritionTips();
+    // console.log('🔑 fetchThisWeekBabyTips:', data.tips[0]);
+
+      setThisWeekNutritionTips(data.tips[0]);
  
   }
 
   useEffect(() => {
-    fetchThisWeekMomTips();
+    fetchThisWeekNutritionTips();
   }, []);
 
   return (
@@ -94,12 +95,12 @@ export default function MomInfoModal({ visible, onClose, weekNumber = 20 }: MomI
           {/* 헤더 */}
           <View className="flex-row items-center justify-between p-6 mt-4">
            <View className="flex-row items-center gap-2">
-           <Image source={require("../../../assets/image/home/home-health-info.png")} className="w-12 h-12" resizeMode="contain" />
+           <Image source={require("../../../../assets/image/home/home-food-info.png")} className="w-12 h-12" resizeMode="contain" />
            <View>
             <Text className="text-xl font-semibold text-gray-800">
-              건강 정보
+              영양 정보
             </Text>
-            <Text className="text-[16px] font-light text-gray-800">{thisWeekMomTips?.title}</Text>
+            <Text className="text-[16px] font-light text-gray-800">{thisWeekNutritionTips?.title}</Text>
             </View>
             </View>
             <TouchableOpacity
@@ -115,14 +116,14 @@ export default function MomInfoModal({ visible, onClose, weekNumber = 20 }: MomI
             {/* 기본 정보 카드 */}
             <View>
               <Text className="text-lg font-semibold pb-2">
-              🌱 지금 엄마는 이런 상태입니다
+              🌱 이번 주차에는 이렇게 관리해보세요
               </Text>
 
               <Border borderColor='pink'/>
             {/* 발달 정보 */}
             <View className='pt-2 px-2'>
               <Text className="text-gray-700 leading-5 text-[14px]">
-                {thisWeekMomTips?.description}
+                {thisWeekNutritionTips?.description}
               </Text>
             </View>
             </View>
