@@ -93,7 +93,7 @@ export default function SignUpHealthScreen({ navigation }: any) {
           placeholder="기타 건강상태나 특이사항을 입력해주세요"
         />
       </View>
-      <Button text="완료" onPress={goToNextStep} />
+      <Button text="완료" onPress={goToNextStep} className="h-12" />
     </ScrollView>
     </KeyboardAvoidingView>
   );

@@ -4,7 +4,7 @@ import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
 import Container from "../../components/common/Container";
 import PercentageBar from "../../components/common/PercentageBar";
 import BabyInfoModal from "../../components/common/BabyInfoModal";
-import { getThisWeekBabyTips, getThisWeekTips, getTodayNutrition, getUserInfo } from "../../api/services/home";
+import { getThisWeekBabyTips, getThisWeekTips, getTodayAIRecommendation, getTodayNutrition, getUserInfo } from "../../api/services/home";
 import { NutrientInfo } from "../../api/types/common";
 import { ThisWeekTipsType, UserInfoType } from "../../api/types/home";
 import MomInfoModal from "../../components/common/MomInfoModal";
@@ -56,11 +56,20 @@ export default function Home({ navigation }: HomeProps) {
     }
   };
 
+  //오늘의 AI 추천 식단 조회 api
+  const fetchTodayAIRecommendation = async () => {
+    const data = await getTodayAIRecommendation();
+    if(data.isSuccess) {
+      // setTodayAIRecommendation(data.result);
+    }
+  }
+
   useEffect(() => {
     // fetchThisWeekTips();
     // fetchThisWeekBabyTips();
     fetchUserInfo();
     fetchTodayNutrition();
+    // fetchTodayAIRecommendation();
   }, []);
 
 
@@ -270,12 +279,6 @@ export default function Home({ navigation }: HomeProps) {
             </View>
            </Container>
            </View>
-
-
-
-
-
-
            </View>
 
       {/* 태아 정보 모달 */}
