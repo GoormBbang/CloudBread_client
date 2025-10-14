@@ -96,7 +96,8 @@ export default function Camera() {
       <View className='w-full h-fit border-t-[1px] border-gray-300 pt-4 px-1'>
         <View className='w-full h-fit flex-row items-end'>
           <Text className='text-[20px] font-medium mr-2'>김치찌개</Text>
-          <Text className='text-[14px] font-light text-[#4b5563]'>1인분 기준 250g</Text>
+          {/* 모든 음식의 양을 100g 기준으로 표시 */}
+          <Text className='text-[14px] font-light text-[#4b5563]'>100g 기준</Text>
           </View>
           <View className='w-full flex-row justify-between mt-4'>
             <View className='flex-1 flex-col justify-center items-center'>
