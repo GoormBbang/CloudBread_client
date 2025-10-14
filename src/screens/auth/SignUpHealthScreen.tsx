@@ -1,60 +1,100 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, ScrollView,KeyboardAvoidingView,Platform } from "react-native";
 import Button from "../../components/common/Button";
 import ProgressBar from "../../components/auth/ProgressBar";
 import Input from "../../components/common/Input";
 import Checkbox, { CheckboxData } from "../../components/common/Checkbox";
 import MultiSelectFilter from "../../components/common/MultiSelectFilter";
+import { useGetMetadata, useUpdateUserHealthInfo } from "../../hooks/auth";
 
-const ALLERGY_OPTIONS = [
-  "알류(가금류)",
-  "우유",
-  "메밀",
-  "땅콩",
-  "대두",
-  "밀",
-  "고등어",
-  "게",
-  "새우",
-  "돼지고기",
-  "복숭아",
-  "토마토",
-  "아황산류",
-  "호두",
-  "닭고기",
-  "쇠고기",
-  "오징어",
-  "조개류(굴, 전복, 홍합 포함)",
-  "잣",
-];
 
 export default function SignUpHealthScreen({ navigation }: any) {
-  const [selectedAllergies, setSelectedAllergies] = useState<string[]>([]);
-  const [usualDietItems, setUsualDietItems] = useState<CheckboxData[]>([
-    { label: "채식", checked: false },
-    { label: "저염식", checked: false },
-    { label: "저당식", checked: false },
-    { label: "해당없음", checked: false },
-  ]);
-  const [personalHealthItems, setPersonalHealthItems] = useState<
-    CheckboxData[]
-  >([
-    { label: "고혈압", checked: false },
-    { label: "임신성 당뇨", checked: false },
-    { label: "당뇨", checked: false },
-  ]);
-  const handleDietItemPress = (toggledLabel: string) => {
-    setUsualDietItems((prevItems) =>
-      prevItems.map((item) =>
-        item.label === toggledLabel ? { ...item, checked: !item.checked } : item
-      )
-    );
+  const [selectedDietIds, setSelectedDietIds] = useState<number[]>([]);
+  const [selectedHealthIds, setSelectedHealthIds] = useState<number[]>([]);
+  const [selectedAllergyIds, setSelectedAllergyIds] = useState<number[]>([]);
+  const [otherHealthFactors, setOtherHealthFactors] = useState('');
+
+  const { data: metadata, isLoading, error } = useGetMetadata();
+  const { mutate: updateUserHealth, isPending } = useUpdateUserHealthInfo();
+  const handleCheckboxToggle = (
+    id: number,
+    selectedIds: number[],
+    setSelectedIds: React.Dispatch<React.SetStateAction<number[]>>
+  ) => {
+    // 이미 선택된 ID라면 배열에서 제거, 아니면 추가
+    if (selectedIds.includes(id)) {
+      setSelectedIds(selectedIds.filter((selectedId) => selectedId !== id));
+    } else {
+      setSelectedIds([...selectedIds, id]);
+    }
   };
   const goToNextStep = () => {
     // 다음 스텝으로 이동
-    navigation.replace("Tab");
+    //navigation.replace("Tab");
+    const payload = {
+      dietTypeIds: selectedDietIds,
+      healthTypeIds: selectedHealthIds, // API 명세에 따라 healthTypeIds 또는 healthConditionIds로
+      allergyIds: selectedAllergyIds,
+      otherHealthFactors: otherHealthFactors,
+    };
+
+    console.log("Sending health info:", payload);
+    updateUserHealth(payload);
   };
   // justify-between  items-center p-8
+  if (isLoading) {
+    return (
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+    >
+    <ScrollView
+      className="flex-1"
+      contentContainerStyle={{ flexGrow: 1, padding: 32, alignItems: "center" }}
+    >
+      <View className="w-full mb-6 ">
+      </View>
+      <Button text="완료" onPress={goToNextStep} />
+    </ScrollView>
+    </KeyboardAvoidingView>
+  );
+  }
+
+  if (error) {
+        return (
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+    >
+    <ScrollView
+      className="flex-1"
+      contentContainerStyle={{ flexGrow: 1, padding: 32, alignItems: "center" }}
+    >
+      <View className="w-full mb-6 ">
+      </View>
+      <Button text="완료" onPress={goToNextStep} />
+    </ScrollView>
+    </KeyboardAvoidingView>
+  );
+  }
+  
+  if(metadata){
+    console.log(metadata?.result?.allergies);
+    //dietTypes
+    //healthTypes
+  }
+  const dietItems: CheckboxData[] = metadata?.result?.dietTypes.map(item => ({
+    id: item.id, // id를 넘겨주는 것이 중요
+    label: item.name,
+    checked: selectedDietIds.includes(item.id),
+  })) || [];
+
+  const healthItems: CheckboxData[] = metadata?.result?.healthTypes.map(item => ({
+    id: item.id,
+    label: item.name,
+    checked: selectedHealthIds.includes(item.id),
+  })) || [];
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -72,25 +112,27 @@ export default function SignUpHealthScreen({ navigation }: any) {
         </Text>
         <Checkbox
           groupLabel="평소 식단"
-          items={usualDietItems}
-          onItemPress={handleDietItemPress}
+          items={dietItems}
+          onItemPress={(id) => handleCheckboxToggle(id, selectedDietIds, setSelectedDietIds)}
           className="w-full"
         />
         <Checkbox
           groupLabel="개인 건강상태 (중복선택가능)"
-          items={personalHealthItems}
-          onItemPress={handleDietItemPress}
-          className="w-full"
+          items={healthItems}
+          onItemPress={(id) => handleCheckboxToggle(id, selectedHealthIds, setSelectedHealthIds)}
+            className="w-full"
         />
         <MultiSelectFilter
           title="알레르기"
-          items={ALLERGY_OPTIONS}
-          selectedItems={selectedAllergies}
-          onSelectionChange={setSelectedAllergies}
+          items={metadata?.result?.allergies || []}
+          selectedItems={selectedAllergyIds}
+          onSelectionChange={setSelectedAllergyIds}
         />
         <Input
           label="기타 건강 상태"
           placeholder="기타 건강상태나 특이사항을 입력해주세요"
+           value={otherHealthFactors}   
+          onChangeText={setOtherHealthFactors} 
         />
       </View>
       <Button text="완료" onPress={goToNextStep} className="h-12" />
