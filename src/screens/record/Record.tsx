@@ -89,16 +89,6 @@ export default function Record() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      {/* 헤더 부분 (실제로는 React Navigation 헤더를 사용) */}
-      <View className="flex-row items-center p-4 border-b border-gray-200">
-        <TouchableOpacity>
-          {/* 실제 앱에서는 아이콘 라이브러리 사용 권장 */}
-          <Text className="text-2xl">‹</Text>
-        </TouchableOpacity>
-        <Text className="flex-1 text-center text-lg font-bold">기록</Text>
-        <View className="w-6" />
-      </View>
-
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
         {/* 캘린더 */}
         <Calendar
