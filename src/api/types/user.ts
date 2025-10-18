@@ -37,3 +37,15 @@ export interface UserHealthInfoPayload {
   allergyIds?: number[];
   otherHealthFactors?: string;
 }
+
+// 업데이트시 전송할 유저정보
+export interface UpdateUserPayload {
+  nickname?: string;
+  dueDate?: string; // "YYYY-MM-DD" 형식
+  height?: number | null;
+  weight?: number | null;
+  dietTypeIds?: number[];
+  healthTypeIds?: number[];
+  allergyIds?: number[];
+  otherHealthFactors?: string;
+}
