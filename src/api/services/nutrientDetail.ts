@@ -81,7 +81,7 @@ export const getFoodHistorySummary = async (
 //오늘의 영양 요약 조회
 export const getNutritionSummary = async (date: string) => {
   const { data } = await apiClient.get<ApiResponse<any>>(
-    `users/me/nutrition/summary?date=${date}`
+    `/users/me/nutrition/summary?date=${date}`
   );
   return data.result;
 };
@@ -89,7 +89,7 @@ export const getNutritionSummary = async (date: string) => {
 //영양소 밸런스 조회
 export const getNutritionBalance = async (date: string) => {
   const { data } = await apiClient.get<ApiResponse<any>>(
-    `users/me/nutrition/balance?date=${date}`
+    `/users/me/nutrition/balance?date=${date}`
   );
   return data.result;
 };
@@ -97,7 +97,7 @@ export const getNutritionBalance = async (date: string) => {
 //특정 날짜에 먹은 음식 리스트 조회
 export const getDailyFoodHistory = async (date: string) => {
   const { data } = await apiClient.get<ApiResponse<any>>(
-    `food-history/today?date=${date}`
+    `/food-history/today?date=${date}`
   );
   //   if (data.isSuccess) {
   //     return data.result;
@@ -108,7 +108,7 @@ export const getDailyFoodHistory = async (date: string) => {
 //AI 영양 피드백 생성 요청
 export const postAIFeedback = async () => {
   const { data } = await apiClient.post<ApiResponse<any>>(
-    "me/nutrition/feedback",
+    "/me/nutrition/feedback",
     {
       timeout: 10000,
     }
