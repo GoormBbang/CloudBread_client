@@ -97,7 +97,7 @@ export const getNutritionBalance = async (date: string) => {
 //특정 날짜에 먹은 음식 리스트 조회
 export const getDailyFoodHistory = async (date: string) => {
   const { data } = await apiClient.get<ApiResponse<any>>(
-    `users/me/food-history/daily?date=${date}`
+    `food-history/today?date=${date}`
   );
   //   if (data.isSuccess) {
   //     return data.result;
@@ -108,7 +108,10 @@ export const getDailyFoodHistory = async (date: string) => {
 //AI 영양 피드백 생성 요청
 export const postAIFeedback = async () => {
   const { data } = await apiClient.post<ApiResponse<any>>(
-    "me/nutrition/feedback"
+    "me/nutrition/feedback",
+    {
+      timeout: 10000,
+    }
   );
   return data.result;
 };
