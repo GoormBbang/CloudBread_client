@@ -15,6 +15,7 @@ import {
 import { TouchableOpacity } from "react-native";
 import Record from "../screens/record/Record";
 import RecordNavigator from "./RecordNavigator";
+import SettingNavigator from "./SettingNavigator";
 
 export type TabParamList = {
   홈: undefined;
@@ -86,8 +87,9 @@ export default function TabNavigation() {
       />
       <Tab.Screen
         name="설정"
-        component={Setting}
+        component={SettingNavigator}
         options={{
+          headerShown: false,
           tabBarIcon: ({ focused }) => (
             <UserRound size={18} color={focused ? "#FF69B4" : "black"} />
           ),
