@@ -109,6 +109,7 @@ export const getDailyFoodHistory = async (date: string) => {
 export const postAIFeedback = async () => {
   const { data } = await apiClient.post<ApiResponse<any>>(
     "/me/nutrition/feedback",
+    null,
     {
       timeout: 10000,
     }
