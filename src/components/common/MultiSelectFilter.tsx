@@ -3,9 +3,9 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { MetaItem } from "../../api/types/user";
 
 type MultiSelectFilterProps = {
-  title: string; 
-  items: MetaItem[]; 
-  selectedItems: number[]; 
+  title: string;
+  items: MetaItem[];
+  selectedItems: number[];
   onSelectionChange: (selectedIds: number[]) => void;
 };
 
@@ -35,7 +35,7 @@ export default function MultiSelectFilter({
 
   return (
     <View className="w-full my-2">
-      <Text className="text-lg font-bold text-gray-800 mb-3">{title}</Text>
+      <Text className="text-base font-bold mb-3">{title}</Text>
 
       <View className="w-full flex-row flex-wrap items-start p-4 border border-gray-200 rounded-xl min-h-[100px]">
         {items.map((item) => {
