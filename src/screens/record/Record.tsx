@@ -80,8 +80,8 @@ const NutrientItem: React.FC<{ icon: any; name: string; amount: string }> = ({
   amount,
 }) => (
   <View className="items-center space-y-1 flex-1">
-    <View className="w-16 h-16 bg-gray-100 rounded-full items-center justify-center">
-      <Image source={icon} className="w-10 h-10" resizeMode="contain" />
+    <View className="w-14 h-14 bg-gray-100 rounded-full items-center justify-center">
+      <Image source={icon} className="w-8 h-8" resizeMode="contain" />
     </View>
     <Text className="text-sm text-gray-600">{name}</Text>
     <Text className="text-sm font-semibold">{amount}</Text>
@@ -194,10 +194,16 @@ export default function Record() {
       );
     }
     return (
-      <View className="bg-gray-50 rounded-lg p-4 mx-4 mt-4">
-        <Text className="font-bold text-base mb-4">
-          {`${intakeInfo.mealType}을 ${intakeInfo.level} 먹었어요!`}
-        </Text>
+      <View className="bg-gray-50 rounded-lg p-4 mx-4 mt-2">
+        <View className="flex flex-row justify-between items-center mb-2">
+          <Text className="font-bold text-base text-gray-800">
+            {`${intakeInfo.mealType}을 ${intakeInfo.level} 먹었어요!`}
+          </Text>
+          <Text className="font-medium text-base text-gray-600">
+            총 {mealInfo.totalCalories} kcal
+          </Text>
+        </View>
+
         <View className="flex-row flex-wrap gap-2">
           {mealInfo.foods.map((food, index) => (
             <View
@@ -211,9 +217,16 @@ export default function Record() {
             </View>
           ))}
         </View>
-        <Text className="text-right font-bold text-gray-600 mt-4">
-          총 {mealInfo.totalCalories} kcal
-        </Text>
+        <TouchableOpacity
+          className="mt-4 flex flex-row justify-center items-center"
+          onPress={() =>
+            navigation.navigate("NutritionDetail", {
+              date: selectedDate,
+            })
+          }
+        >
+          <Text className="text-right text-gray-500">오늘의 영양요약 &gt;</Text>
+        </TouchableOpacity>
       </View>
     );
   };
@@ -222,7 +235,6 @@ export default function Record() {
     <SafeAreaView className="flex-1 bg-white">
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
         <Calendar
-          // ... (Calendar props는 동일)
           current={currentDate.toISOString().split("T")[0]}
           markedDates={markedDates}
           markingType="multi-dot"
@@ -261,42 +273,30 @@ export default function Record() {
                 <View className="px-4">
                   <View className="flex-row justify-around bg-white rounded-xl p-4">
                     <NutrientItem
-                      icon={require("../../../assets/icons/auth/onboarding-baby.png")}
+                      icon={require("../../../assets/icons/food/nutrientCarbs.png")}
                       name="탄수화물"
                       amount={`${summaryData.nutritionTotals.carbs}g`}
                     />
                     <NutrientItem
-                      icon={require("../../../assets/icons/auth/onboarding-baby.png")}
+                      icon={require("../../../assets/icons/food/nutrientFats.png")}
                       name="단백질"
                       amount={`${summaryData.nutritionTotals.protein}g`}
                     />
                     <NutrientItem
-                      icon={require("../../../assets/icons/auth/onboarding-baby.png")}
+                      icon={require("../../../assets/icons/food/nutrientProteins.png")}
                       name="지방"
                       amount={`${summaryData.nutritionTotals.fat}g`}
                     />
                     <NutrientItem
-                      icon={require("../../../assets/icons/auth/onboarding-baby.png")}
+                      icon={require("../../../assets/icons/food/nutrientSugars.png")}
                       name="당류"
                       amount={`${summaryData.nutritionTotals.sugar}g`}
                     />
                   </View>
-                  <TouchableOpacity
-                    className="mt-4"
-                    onPress={() =>
-                      navigation.navigate("NutritionDetail", {
-                        date: selectedDate,
-                      })
-                    }
-                  >
-                    <Text className="text-right text-gray-500">
-                      오늘의 영양요약 &gt;
-                    </Text>
-                  </TouchableOpacity>
                 </View>
               )}
               {availableMeals.length > 0 && (
-                <View className="flex-row justify-around bg-white rounded-xl mx-4 my-6 p-1">
+                <View className="flex-row justify-around bg-white rounded-xl mx-4 mt-6 p-1">
                   {availableMeals.map((meal) => (
                     <TouchableOpacity
                       key={meal}
