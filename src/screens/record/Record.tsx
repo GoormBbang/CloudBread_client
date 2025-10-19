@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,12 +6,24 @@ import {
   TouchableOpacity,
   Image,
   SafeAreaView,
+  ActivityIndicator,
 } from "react-native";
-import { Calendar, LocaleConfig } from "react-native-calendars";
+import { Calendar, LocaleConfig, DateData } from "react-native-calendars";
 import { MarkedDates } from "react-native-calendars/src/types";
-import { RootStackNavigationProp } from "../../navigation/RootNavigator";
 import { useNavigation } from "@react-navigation/native";
-// 한국어 설정
+import {
+  useGetFoodHistoryCalendar,
+  useGetFoodHistorySummary,
+} from "../../hooks/nutrientDetail";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RecordStackParamList } from "../../navigation/RecordNavigator";
+
+type RecordScreenNavigationProp = NativeStackNavigationProp<
+  RecordStackParamList,
+  "Record"
+>;
+
+// --- (LocaleConfig 및 헬퍼 함수는 동일하므로 생략) ---
 LocaleConfig.locales["kr"] = {
   monthNames: [
     "1월",
@@ -54,16 +66,20 @@ LocaleConfig.locales["kr"] = {
 };
 LocaleConfig.defaultLocale = "kr";
 
-// 영양소 아이템을 위한 타입 정의
-type NutrientProps = {
-  icon: any; // require()의 반환 타입
-  name: string;
-  amount: string;
+const getTodayString = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = (today.getMonth() + 1).toString().padStart(2, "0");
+  const day = today.getDate().toString().padStart(2, "0");
+  return `${year}-${month}-${day}`;
 };
 
-// 영양소 아이템 컴포넌트
-const NutrientItem: React.FC<NutrientProps> = ({ icon, name, amount }) => (
-  <View className="items-center space-y-1">
+const NutrientItem: React.FC<{ icon: any; name: string; amount: string }> = ({
+  icon,
+  name,
+  amount,
+}) => (
+  <View className="items-center space-y-1 flex-1">
     <View className="w-16 h-16 bg-gray-100 rounded-full items-center justify-center">
       <Image source={icon} className="w-10 h-10" resizeMode="contain" />
     </View>
@@ -73,178 +89,236 @@ const NutrientItem: React.FC<NutrientProps> = ({ icon, name, amount }) => (
 );
 
 export default function Record() {
-  const [selectedDate, setSelectedDate] = useState("2024-01-15");
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(getTodayString());
   const [selectedMeal, setSelectedMeal] = useState<"아침" | "점심" | "저녁">(
     "아침"
   );
-  const navigation = useNavigation<RootStackNavigationProp>();
-  const markedDates: MarkedDates = {
-    [selectedDate]: {
+  const navigation = useNavigation<RecordScreenNavigationProp>();
+
+  const { data: foodHistory, isLoading: isCalendarLoading } =
+    useGetFoodHistoryCalendar(
+      currentDate.getFullYear(),
+      currentDate.getMonth() + 1
+    );
+
+  const {
+    data: summaryData,
+    isLoading: isSummaryLoading,
+    isError: isSummaryError,
+  } = useGetFoodHistorySummary(selectedDate);
+
+  const markedDates = useMemo((): MarkedDates => {
+    const markings: MarkedDates = {};
+    if (foodHistory?.days) {
+      foodHistory.days.forEach((item) => {
+        const dayString = `${foodHistory.year}-${String(
+          foodHistory.month
+        ).padStart(2, "0")}-${String(item.day).padStart(2, "0")}`;
+        markings[dayString] = {
+          dots: Array.from({ length: item.count }, (_, i) => ({
+            key: String(i),
+            color: "#E54B8A",
+          })),
+        };
+      });
+    }
+    markings[selectedDate] = {
+      ...(markings[selectedDate] || {}),
       selected: true,
-      selectedColor: "#FFD6E5", // 핑크색 배경
-      selectedTextColor: "#E54B8A", // 핑크색 텍스트
-    },
-    "2024-01-03": { marked: true, dotColor: "#E54B8A" }, // 기록이 있는 날짜 표시 예시
+      selectedColor: "#F9C4D4",
+      selectedTextColor: "#E54B8A",
+    };
+    return markings;
+  }, [foodHistory, selectedDate]);
+
+  const availableMeals = useMemo(() => {
+    if (!summaryData?.meals) return [];
+
+    const mealTypeReverseMap: { [key: string]: "아침" | "점심" | "저녁" } = {
+      BREAKFAST: "아침",
+      LUNCH: "점심",
+      DINNER: "저녁",
+    };
+
+    const availableMealSet = new Set(
+      summaryData.meals
+        .map((meal) => mealTypeReverseMap[meal.mealType])
+        .filter(Boolean)
+    );
+
+    return ["아침", "점심", "저녁"].filter((meal) =>
+      availableMealSet.has(meal as any)
+    ) as ("아침" | "점심" | "저녁")[];
+  }, [summaryData]);
+
+  useEffect(() => {
+    if (availableMeals.length > 0 && !availableMeals.includes(selectedMeal)) {
+      setSelectedMeal(availableMeals[0]);
+    }
+  }, [availableMeals, selectedMeal]);
+
+  const handleMonthChange = (date: DateData) => {
+    setCurrentDate(new Date(date.dateString));
+  };
+
+  const renderMealDetails = () => {
+    if (isSummaryLoading) {
+      return <ActivityIndicator color="#E54B8A" className="my-10" />;
+    }
+    if (isSummaryError || !summaryData) {
+      return (
+        <Text className="text-center text-gray-500 py-10">
+          기록된 식단이 없습니다.
+        </Text>
+      );
+    }
+    const mealTypeMapping = {
+      아침: "BREAKFAST",
+      점심: "LUNCH",
+      저녁: "DINNER",
+    };
+    const selectedMealType = mealTypeMapping[selectedMeal];
+    const mealInfo = summaryData.meals.find(
+      (m) => m.mealType === selectedMealType
+    );
+    const intakeInfo = summaryData.intakeMessages.find(
+      (i) => i.mealType === selectedMeal
+    );
+
+    if (!mealInfo || !intakeInfo) {
+      return (
+        <Text className="text-center text-gray-500 py-10">
+          해당 끼니의 기록이 없습니다.
+        </Text>
+      );
+    }
+    return (
+      <View className="bg-gray-50 rounded-lg p-4 mx-4 mt-4">
+        <Text className="font-bold text-base mb-4">
+          {`${intakeInfo.mealType}을 ${intakeInfo.level} 먹었어요!`}
+        </Text>
+        <View className="flex-row flex-wrap gap-2">
+          {mealInfo.foods.map((food, index) => (
+            <View
+              key={index}
+              className="bg-white rounded-lg p-2 px-3 border border-gray-200"
+            >
+              <Text>
+                {food.category === "밥류" ? "🍚" : "🍲"} {food.foodName}{" "}
+                <Text className="text-gray-500">{food.calories} kcal</Text>
+              </Text>
+            </View>
+          ))}
+        </View>
+        <Text className="text-right font-bold text-gray-600 mt-4">
+          총 {mealInfo.totalCalories} kcal
+        </Text>
+      </View>
+    );
   };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
-        {/* 캘린더 */}
         <Calendar
-          current={"2024-02-01"}
-          onDayPress={(day) => setSelectedDate(day.dateString)}
+          // ... (Calendar props는 동일)
+          current={currentDate.toISOString().split("T")[0]}
           markedDates={markedDates}
-          // 헤더 커스텀 (월/년)
+          markingType="multi-dot"
+          onDayPress={(day) => setSelectedDate(day.dateString)}
+          onMonthChange={handleMonthChange}
           renderHeader={(date) => {
-            const month = date?.toString("MMMM");
-            const year = date?.getFullYear();
+            const headerDate = new Date(date?.toString() || Date.now());
+            const month =
+              LocaleConfig.locales["kr"]?.monthNames?.[headerDate.getMonth()] ||
+              "";
+            const year = headerDate.getFullYear();
             return (
-              <View>
-                <Text className="text-lg font-bold">{`${year}년 ${month}`}</Text>
-              </View>
+              <Text className="text-lg font-bold">{`${year}년 ${month}`}</Text>
             );
           }}
-          // 캘린더 테마 커스텀
           theme={{
-            textSectionTitleColor: "#b6c1cd", // 요일 색상
-            selectedDayBackgroundColor: "light-pink",
-            selectedDayTextColor: "main-pink",
-            todayTextColor: "main-pink",
-            dayTextColor: "#2d4150",
-            textDisabledColor: "#d9e1e8", // 다른 달 날짜
-            dotColor: "main-pink",
-            selectedDotColor: "#ffffff",
+            textSectionTitleColor: "black",
             arrowColor: "black",
-            monthTextColor: "black",
-            indicatorColor: "blue",
-            textDayFontWeight: "300",
-            textMonthFontWeight: "bold",
-            textDayHeaderFontWeight: "300",
-            textDayFontSize: 16,
-            textMonthFontSize: 16,
-            textDayHeaderFontSize: 14,
           }}
         />
-        <View className="h-full bg-light-pink-2 bg-opacity-90">
-          {/* 식사 탭 */}
-          <View className="flex-row justify-around bg-white rounded-xl mx-4 my-6 p-1">
-            {["아침", "점심", "저녁"].map((meal) => (
-              <TouchableOpacity
-                key={meal}
-                onPress={() => setSelectedMeal(meal as any)}
-                className={`flex flex-row items-center justify-center flex-1 p-2 rounded-lg ${
-                  selectedMeal === meal ? "bg-white shadow" : ""
-                }`}
-              >
-                <Text className="text-center font-semibold">{meal}</Text>
-                {selectedMeal === meal && (
-                  <View className="w-1.5 h-1.5 bg-main-pink rounded-full self-center ml-1" />
-                )}
-              </TouchableOpacity>
-            ))}
-          </View>
 
-          {/* 식단 상세 카드 */}
-          <View className="bg-gray-50 rounded-lg p-4 mx-4 mt-6">
-            <Text className="font-bold text-base mb-4">
-              점심을 적당히 먹었어요!
+        {isCalendarLoading && (
+          <ActivityIndicator size="large" color="#E54B8A" className="my-4" />
+        )}
+        <View className="h-full bg-light-pink-2 bg-opacity-90 pt-4">
+          {!isCalendarLoading && foodHistory?.days.length === 0 && (
+            <Text className="text-center text-gray-500 py-10">
+              조회 가능한 식단이 없습니다.
             </Text>
-            <View className="flex-row space-x-2">
-              <View className="bg-white rounded-lg p-2 px-3 border border-gray-200">
-                <Text>
-                  🍚 현미밥 <Text className="text-gray-500">320 kcal</Text>
-                </Text>
-              </View>
-              <View className="bg-white rounded-lg p-2 px-3 border border-gray-200">
-                <Text>
-                  🍲 미역국 <Text className="text-gray-500">85 kcal</Text>
-                </Text>
-              </View>
-            </View>
-          </View>
+          )}
 
-          {/* 오늘의 영양 요약 */}
-          <TouchableOpacity
-            className="mt-4 mr-4"
-            onPress={() => navigation.navigate("NutritionDetail")}
-          >
-            <Text className="text-right text-gray-500">
-              오늘의 영양요약 &gt;
-            </Text>
-          </TouchableOpacity>
+          {!isCalendarLoading && foodHistory && foodHistory.days.length > 0 && (
+            <>
+              {/* ... (영양소 요약 부분은 동일) ... */}
+              {!isSummaryLoading && !isSummaryError && summaryData && (
+                <View className="px-4">
+                  <View className="flex-row justify-around bg-white rounded-xl p-4">
+                    <NutrientItem
+                      icon={require("../../../assets/icons/auth/onboarding-baby.png")}
+                      name="탄수화물"
+                      amount={`${summaryData.nutritionTotals.carbs}g`}
+                    />
+                    <NutrientItem
+                      icon={require("../../../assets/icons/auth/onboarding-baby.png")}
+                      name="단백질"
+                      amount={`${summaryData.nutritionTotals.protein}g`}
+                    />
+                    <NutrientItem
+                      icon={require("../../../assets/icons/auth/onboarding-baby.png")}
+                      name="지방"
+                      amount={`${summaryData.nutritionTotals.fat}g`}
+                    />
+                    <NutrientItem
+                      icon={require("../../../assets/icons/auth/onboarding-baby.png")}
+                      name="당류"
+                      amount={`${summaryData.nutritionTotals.sugar}g`}
+                    />
+                  </View>
+                  <TouchableOpacity
+                    className="mt-4"
+                    onPress={() =>
+                      navigation.navigate("NutritionDetail", {
+                        date: selectedDate,
+                      })
+                    }
+                  >
+                    <Text className="text-right text-gray-500">
+                      오늘의 영양요약 &gt;
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+              {availableMeals.length > 0 && (
+                <View className="flex-row justify-around bg-white rounded-xl mx-4 my-6 p-1">
+                  {availableMeals.map((meal) => (
+                    <TouchableOpacity
+                      key={meal}
+                      onPress={() => setSelectedMeal(meal)}
+                      className={`flex flex-row items-center justify-center flex-1 p-2 rounded-lg ${
+                        selectedMeal === meal ? "bg-white shadow" : ""
+                      }`}
+                    >
+                      <Text className="text-center font-semibold">{meal}</Text>
+                      {selectedMeal === meal && (
+                        <View className="w-1.5 h-1.5 bg-main-pink rounded-full self-center ml-1" />
+                      )}
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
+
+              {renderMealDetails()}
+            </>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
-
-/*
- 'stylesheet.calendar.header': {
-                week: {
-                    marginTop: 5,
-                    flexDirection: 'row',
-                    justifyContent: 'space-around'
-                }
-
-                <View className="flex-row justify-around">
-            <NutrientItem
-              icon={require("../../assets/images/carbohydrate.png")}
-              name="탄수화물"
-              amount="200g"
-            />
-            <NutrientItem
-              icon={require("../../assets/images/protein.png")}
-              name="단백질"
-              amount="200g"
-            />
-            <NutrientItem
-              icon={require("../../assets/images/fat.png")}
-              name="지방"
-              amount="200g"
-            />
-            <NutrientItem
-              icon={require("../../assets/images/sugar.png")}
-              name="당류"
-              amount="200g"
-            />
-          </View>
-        </View>
-            } 
-        
-        
-        <View className="px-6">
-          <Text className="text-right font-bold text-gray-600 mb-4">
-            총 405 kcal
-          </Text>
-          
- 'stylesheet.calendar.header': {
-                week: {
-                    marginTop: 5,
-                    flexDirection: 'row',
-                    justifyContent: 'space-around'
-                }
-
-                <View className="flex-row justify-around">
-            <NutrientItem
-              icon={require("../../assets/images/carbohydrate.png")}
-              name="탄수화물"
-              amount="200g"
-            />
-            <NutrientItem
-              icon={require("../../assets/images/protein.png")}
-              name="단백질"
-              amount="200g"
-            />
-            <NutrientItem
-              icon={require("../../assets/images/fat.png")}
-              name="지방"
-              amount="200g"
-            />
-            <NutrientItem
-              icon={require("../../assets/images/sugar.png")}
-              name="당류"
-              amount="200g"
-            />
-          </View>
-        </View>    */
