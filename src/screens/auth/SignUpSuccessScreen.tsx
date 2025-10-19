@@ -76,7 +76,7 @@ export default function SignUpSuccessScreen({ navigation }: any) {
         </View>
       </View>
 
-      <Button text="시작하기" onPress={goToNextStep} />
+      <Button text="시작하기" onPress={goToNextStep} className="h-12" />
     </SafeAreaView>
   );
 }

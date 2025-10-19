@@ -54,7 +54,7 @@ export default function SignUpHealthScreen({ navigation }: any) {
     >
       <View className="w-full mb-6 ">
       </View>
-      <Button text="완료" onPress={goToNextStep} />
+      <Button text="완료" onPress={goToNextStep} className="h-12" />
     </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -72,7 +72,7 @@ export default function SignUpHealthScreen({ navigation }: any) {
     >
       <View className="w-full mb-6 ">
       </View>
-      <Button text="완료" onPress={goToNextStep} />
+      <Button text="완료" onPress={goToNextStep} className="h-12" />
     </ScrollView>
     </KeyboardAvoidingView>
   );
