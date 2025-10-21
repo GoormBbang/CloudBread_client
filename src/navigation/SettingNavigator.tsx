@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react-native";
 // 설정 관련 스크린들을 import 합니다.
 import Setting from "../screens/setting/Setting";
 import SettingHealthScreen from "../screens/setting/SettingHealthScreen";
+import NotificationSettingsScreen from "../screens/setting/NotificationSettingsScreen";
 
 export type SettingsStackParamList = {
   Settings: undefined; // 초기 설정 화면
@@ -47,11 +48,11 @@ export default function SettingNavigator() {
         component={SettingHealthScreen}
         options={{ title: "개인정보 수정" }}
       />
-      {/* <Stack.Screen
+      <Stack.Screen
         name="NotificationSettings"
         component={NotificationSettingsScreen}
         options={{ title: "알림 설정" }}
-      /> */}
+      />
     </Stack.Navigator>
   );
 }
