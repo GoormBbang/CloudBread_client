@@ -10,6 +10,7 @@ import ChangeBirth from "../screens/changeBirth/ChangeBirth";
 import ChangeName from "../screens/changeName/ChangeName";
 import Camera from "../screens/camera/Camera";
 import NutritionDetailScreen from "../screens/record/NutritionDetailScreen";
+import Home from "../screens/home/Home";
 
 export type RootStackNavigationProp =
   NativeStackNavigationProp<RootStackParamList>;

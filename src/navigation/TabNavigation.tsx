@@ -33,7 +33,7 @@ export default function TabNavigation() {
       <Tab.Screen name="홈" component={Home} options={{ tabBarIcon: ({ focused }) => <House size={18} color={focused ? '#FF69B4' : 'black'} /> }} />
       <Tab.Screen name="챗봇" component={ChatBot} options={{ tabBarIcon: ({ focused }) => <Bot size={18} color={focused ? '#FF69B4' : 'black'} /> }} />
       <Tab.Screen name="촬영" component={Camera} options={{ tabBarIcon: ({ focused }) => <CameraIcon size={18} color={focused ? '#FF69B4' : 'black'} /> }} />
-      <Tab.Screen name="기록" component={RecordNavigato} options={{ tabBarIcon: ({ focused }) => <CalendarDays size={18} color={focused ? '#FF69B4' : 'black'} /> }} />
+      <Tab.Screen name="기록" component={RecordNavigator} options={{ tabBarIcon: ({ focused }) => <CalendarDays size={18} color={focused ? '#FF69B4' : 'black'} /> }} />
       <Tab.Screen name="설정" component={SettingNavigator} options={{ tabBarIcon: ({ focused }) => <UserRound size={18} color={focused ? '#FF69B4' : 'black'} /> }} />
     </Tab.Navigator>
   );
