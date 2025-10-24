@@ -38,7 +38,7 @@ export const CheckboxItem = ({
 };
 
 export interface CheckboxData {
-  id:number;
+  id: number;
   label: string;
   checked: boolean;
 }
@@ -47,7 +47,7 @@ interface CheckboxGroupProps {
   groupLabel: string;
   subTitle?: string;
   items: CheckboxData[];
-  onItemPress: (id:number) => void;
+  onItemPress: (id: number) => void;
   className?: string;
 }
 
@@ -60,7 +60,7 @@ const Checkbox = ({
 }: CheckboxGroupProps) => {
   return (
     <View className={`w-full ${className} mb-2`}>
-      <Text className="text-sm font-medium mb-2">{groupLabel}</Text>
+      <Text className="text-base font-bold mb-2">{groupLabel}</Text>
       <View className="w-full">
         {items.map((item, index) => (
           <CheckboxItem

@@ -1,15 +1,27 @@
-import React, { useLayoutEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, SafeAreaView } from 'react-native';
-import { Check, Search, Heart, Smile, Bell } from 'lucide-react-native';
-import { useAuthStore } from '../../store/authStore';
-import Button from '../../components/common/Button';
+import React, { useLayoutEffect } from "react";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  SafeAreaView,
+} from "react-native";
+import { Check, Search, Heart, Smile, Bell } from "lucide-react-native";
+import { useAuthStore } from "../../store/authStore";
+import Button from "../../components/common/Button";
 //import { AuthStackParamList } from '../../navigation/AuthNavigator'; // 네비게이터 타입 경로
 
 // 네비게이션 prop 타입을 정의합니다.
 //type Props = StackScreenProps<AuthStackParamList, 'SignUpSuccess'>;
 
 // 서비스 항목을 위한 작은 컴포넌트
-const ServiceItem = ({ icon: Icon, text }: { icon: React.ElementType, text: string }) => (
+const ServiceItem = ({
+  icon: Icon,
+  text,
+}: {
+  icon: React.ElementType;
+  text: string;
+}) => (
   <View className="flex-row items-center mb-4">
     <Icon color="#E17A9B" size={22} className="mr-3" />
     <Text className="text-base text-gray-700">{text}</Text>
@@ -23,14 +35,14 @@ export default function SignUpSuccessScreen({ navigation }: any) {
   // 화면 헤더의 제목을 설정합니다.
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: '회원가입',
+      title: "회원가입",
       headerBackVisible: false, // 뒤로가기 버튼 숨김
     });
   }, [navigation]);
 
   // '시작하기' 버튼 클릭 시 Tab 네비게이터로 이동 (뒤로가기 방지)
   const goToNextStep = () => {
-    navigation.replace('Tab');
+    navigation.replace("Tab");
   };
 
   return (
@@ -57,7 +69,9 @@ export default function SignUpSuccessScreen({ navigation }: any) {
               className="w-12 h-12 rounded-full mr-4"
             />
             <View>
-              <Text className="text-base font-bold text-gray-800">{user.nickname} 님</Text>
+              <Text className="text-base font-bold text-gray-800">
+                {user.nickname} 님
+              </Text>
               {/* 이메일 정보가 있다면 user 객체에서 가져올 수 있습니다. */}
               {/* <Text className="text-sm text-gray-500">{user.email}</Text> */}
             </View>
@@ -71,12 +85,19 @@ export default function SignUpSuccessScreen({ navigation }: any) {
           </Text>
           <ServiceItem icon={Search} text="임산부 맞춤 영양 분석" />
           <ServiceItem icon={Heart} text="개인 맞춤 건강 관리" />
-          <ServiceItem icon={Smile} text="임산부를 위한 개인 맞춤형 식단 추천" />
+          <ServiceItem
+            icon={Smile}
+            text="임산부를 위한 개인 맞춤형 식단 추천"
+          />
           <ServiceItem icon={Bell} text="맞춤형 알림 서비스" />
         </View>
       </View>
 
-      <Button text="시작하기" onPress={goToNextStep} className="h-12" />
+      <Button
+        text="시작하기"
+        onPress={goToNextStep}
+        style={{ paddingVertical: 20 }}
+      />
     </SafeAreaView>
   );
 }

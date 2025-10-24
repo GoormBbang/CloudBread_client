@@ -38,8 +38,22 @@ export interface UserHealthInfoPayload {
   otherHealthFactors?: string;
 }
 
+
 // 프로필 (이름, 생년월일)
 export interface UserProfile {
   nickname: string;
   birthDate: string;
 }
+
+// 업데이트시 전송할 유저정보
+export interface UpdateUserPayload {
+  nickname?: string;
+  dueDate?: string; // "YYYY-MM-DD" 형식
+  height?: number | null;
+  weight?: number | null;
+  dietTypeIds?: number[];
+  healthTypeIds?: number[];
+  allergyIds?: number[];
+  otherHealthFactors?: string;
+}
+
