@@ -1,14 +1,18 @@
 import { ChevronRight, CloudSun, Moon, RefreshCw, Sun, User2 } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
-import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, Image, ScrollView, TouchableOpacity, Modal } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import Container from "../../components/common/Container";
 import PercentageBar from "../../components/common/PercentageBar";
 import BabyInfoModal from "../../components/common/modal/BabyInfoModal";
-import { getThisWeekBabyTips, getThisWeekTips, getTodayAIRecommendation, getTodayNutrition, getUserInfo } from "../../api/services/home";
+import { getFoodNutritionDetail, getThisWeekTips, getTodayFoodList, getTodayNutrition, getUserInfo, postTodayFoodListRefresh } from "../../api/services/home";
 import { NutrientInfo } from "../../api/types/common";
-import { ThisWeekTipsType, UserInfoType } from "../../api/types/home";
+import { ThisWeekTipsType, TodayAIRecommendationType, UserInfoType } from "../../api/types/home";
 import MomInfoModal from "../../components/common/modal/MomInfoModal";
 import NutritionInfoModal from "../../components/common/modal/NutritionModal";
+import NutritionDetail from "../../components/common/NutritionDetail";
+import Button from "../../components/common/Button";
+import Header from "../../components/common/Header";
 
 
 interface HomeProps {
@@ -24,6 +28,10 @@ export default function Home({ navigation }: HomeProps) {
   const [babyInfoModalVisible, setBabyInfoModalVisible] = useState(false);
   const [momInfoModalVisible, setMomInfoModalVisible] = useState(false);
   const [nutritionInfoModalVisible, setNutritionInfoModalVisible] = useState(false);
+  const [todayAIRecommendation, setTodayAIRecommendation] = useState<TodayAIRecommendationType[]>([]);
+  const [isOpenFoodDetailModal, setIsOpenFoodDetailModal] = useState(false);
+  const [foodInfo,setFoodInfo] = useState<any>();
+  const [nutritionInfo, setNutritionInfo] = useState<any>();
 //프로필 정보 조회 api
   const fetchUserInfo = async () => {
     const data = await getUserInfo();
@@ -58,26 +66,91 @@ export default function Home({ navigation }: HomeProps) {
 
   //오늘의 AI 추천 식단 조회 api
   const fetchTodayAIRecommendation = async () => {
-    const data = await getTodayAIRecommendation();
+    const data = await getTodayFoodList();
     if(data.isSuccess) {
-      // setTodayAIRecommendation(data.result);
+      console.log('AI 추천 식단:', data.result.sections);
+      setTodayAIRecommendation(data.result.sections);
+    }
+  }
+ //오늘의 AI 추천 식단 -> 새로고침
+  const fetchTodayFoodListRefresh = async () => {
+    const data = await postTodayFoodListRefresh();
+    if(data.isSuccess) {
+      console.log('오늘의 AI 추천 식단 새로고침:', data.result);
+      fetchTodayAIRecommendation();
     }
   }
 
+  //오늘의 AI 추천 식단 -> 상세 음식 영양 정보 조회 api
+  const fetchFoodNutritionDetail = async (foodId: string) => {
+    try {
+      const data = await getFoodNutritionDetail(foodId);
+      console.log('🔍 foodNutritionDetail:', data);
+      if(data.isSuccess) {
+        // const nutrientsArray = Object.values(data.result.nutrients || {});
+        setFoodInfo(data.result);
+        setNutritionInfo(data.result.nutrients);
+        setIsOpenFoodDetailModal(true);
+      } else {
+        console.error('❌ API 호출 실패:', data);
+      }
+    } catch (error) {
+      console.error('❌ fetchFoodNutritionDetail 에러:', error);
+    }
+  }
+
+  const onClickFoodDetail = (foodId: string) => {
+    console.log('🔍 foodId:', foodId);
+    fetchFoodNutritionDetail(foodId);
+  }
+  
+  // 식사 타입에 따른 한글 이름 반환
+  const getMealName = (mealType: string) => {
+    switch(mealType) {
+      case 'BREAKFAST':
+        return '아침';
+      case 'LUNCH':
+        return '점심';
+      case 'DINNER':
+        return '저녁';
+      default:
+        return mealType;
+    }
+  };
+
+  // 음식 카테고리에 따른 배경색 반환
+  const getCategoryColor = (category: string) => {
+    const colors: { [key: string]: string } = {
+      '밥': '#89b9ad',
+      '국': '#e46592',
+      '반찬': '#4ECDC4',
+      '김치': '#FF6B6B',
+      '과일': '#FFD93D',
+      '기타': '#95a5a6'
+    };
+    return colors[category] || '#89b9ad';
+  };
+
   useEffect(() => {
-    // fetchThisWeekTips();
-    // fetchThisWeekBabyTips();
-    fetchUserInfo();
     fetchTodayNutrition();
-    // fetchTodayAIRecommendation();
+    fetchTodayAIRecommendation();
   }, []);
+
+  // Profile 화면에서 돌아올 때마다 사용자 정보 새로고침
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchUserInfo();
+    }, [])
+  );
 
 
   return (
+    <>
     <ScrollView 
       className="flex-1 bg-white w-full"
       showsVerticalScrollIndicator={false}
     >
+      <Header title="홈" />
 <View className="w-full bg-light-pink-2">
       <TouchableOpacity className="w-full h-20 flex flex-row items-center gap-2 px-4 justify-between" onPress={() => navigation.navigate("Profile")}>
         <View className="flex-row items-center gap-2">
@@ -152,22 +225,9 @@ export default function Home({ navigation }: HomeProps) {
         </View>
            <View className="px-4 mt-4 w-full flex-row items-center justify-between">
             <Text className="text-lg mb-[6px]">오늘의 AI 추천 식단</Text>
-            <TouchableOpacity className="flex-row items-center" onPress={() => {
-              // 백엔드 서버가 실행되지 않아 임시로 비활성화
-              console.log('새로고침 버튼 클릭 - API 호출 비활성화됨');
-              // const fetchTodayNutrition = async () => {
-              //   try {
-              //     setLoading(true);
-              //     const data = await getTodayNutrition();
-              //     setNutritionData(data);
-              //   } catch (error) {
-              //     console.error('❌ API 호출 실패:', error);
-              //   } finally {
-              //     setLoading(false);
-              //   }
-              // };
-              // fetchTodayNutrition();
-            }}>
+            <TouchableOpacity className="flex-row items-center" onPress={()=>
+              fetchTodayFoodListRefresh()
+            }>
               <RefreshCw size={12} strokeWidth={3} color="#e46592" style={{ marginRight: 4 }} />
               <Text className="text-[#4b5563] text-[14px]">새로고침</Text>
             </TouchableOpacity>
@@ -175,112 +235,45 @@ export default function Home({ navigation }: HomeProps) {
            </View>
 
            <View className="px-4 mt-4 w-full">
-
-           <View className="mb-6">
-           <Container>
-            <View className="flex-row items-center justify-between w-full">
-            <View className="flex-row items-center mb-2">
-            <Sun size={14} strokeWidth={4} color="#e46592" style={{ marginRight: 4 }} />
-            <Text className="text-[#118270] text-[16px]">아침</Text>
-            </View>
-            <View className="flex-row items-center justify-between w-min px-2 py-1.5 bg-[#f9c4d44d] rounded-lg">
-              <Text className="text-[#1f2937] text-[12px]">520kcal</Text>
-            </View>
-            </View>
-            <View className="flex-row items-center mb-2">
-              <View className='w-12 h-12 bg-[#89b9ad] rounded-[4px] flex items-center justify-center mr-2'><Text className="text-white text-[12px]">밥</Text></View>
-            <View className="flex-col gap-1">
-              <Text>현미밥</Text>
-              <Text className="text-[#4b5563] text-[12px]">1공기(210g)</Text>
-            </View>
-            </View>
-            <View className="flex-row items-center mb-2">
-              <View className='w-12 h-12 bg-[#89b9ad] rounded-[4px] flex items-center justify-center mr-2'><Text className="text-white text-[12px]">밥</Text></View>
-            <View className="flex-col gap-1">
-              <Text>현미밥</Text>
-              <Text className="text-[#4b5563] text-[12px]">1공기(210g)</Text>
-            </View>
-            </View>
-            <View className="flex-row items-center mb-2">
-              <View className='w-12 h-12 bg-[#89b9ad] rounded-[4px] flex items-center justify-center mr-2'><Text className="text-white text-[12px]">밥</Text></View>
-            <View className="flex-col gap-1">
-              <Text>현미밥</Text>
-              <Text className="text-[#4b5563] text-[12px]">1공기(210g)</Text>
-            </View>
-            </View>
-           </Container>
+           {todayAIRecommendation.length > 0 ? (
+             todayAIRecommendation.map((meal, index) => (
+               <View key={index} className="mb-6">
+                 <Container>
+                   <View className="flex-row items-center justify-between w-full">
+                     <View className="flex-row items-center justify-center mb-2">
+                       <Text className="text-[#118270] text-[16px] text-center">{getMealName(meal.mealType)}</Text>
+                     </View>
+                     <View className="flex-row items-center justify-between w-min px-2 py-1.5 bg-[#f9c4d44d] rounded-lg">
+                       <Text className="text-[#1f2937] text-[12px]">{meal.totalKcal}kcal</Text>
+                     </View>
+                   </View>
+                   
+                   {meal.items.map((food, foodIndex) => (
+                     <TouchableOpacity key={foodIndex} className="flex-row items-center mb-2"  onPress={()=>{onClickFoodDetail(food.foodId.toString());}}>
+                       <View 
+                         className='w-12 h-12 rounded-[4px] flex items-center justify-center mr-2'
+                         style={{ backgroundColor: getCategoryColor(food.foodCategory) }}
+                       >
+                         <Text className="text-white text-[12px] text-center">{food.foodCategory}</Text>
+                       </View>
+                       <View className="flex-col gap-1 flex-1" >
+                         <Text numberOfLines={1} ellipsizeMode="tail">{food.name}</Text>
+                         <Text className="text-[#4b5563] text-[12px]" numberOfLines={1} ellipsizeMode="tail">{food.portionLabel}</Text>
+                       </View>
+                     </TouchableOpacity>
+                   ))}
+                 </Container>
+               </View>
+             ))
+           ) : (
+             <View className="mb-6">
+               <Container>
+                 <Text className="text-center text-[#4b5563] py-8">추천 식단을 불러오는 중입니다...</Text>
+               </Container>
+             </View>
+           )}
            </View>
-
-           <View className="mb-6">
-           <Container>
-            <View className="flex-row items-center justify-between w-full">
-            <View className="flex-row items-center mb-2">
-            <CloudSun size={14} strokeWidth={3.5} color="#e46592" style={{ marginRight: 4 }} />
-            <Text className="text-[#118270] text-[16px]">점심</Text>
-            </View>
-            <View className="flex-row items-center justify-between w-min px-2 py-1.5 bg-[#f9c4d44d] rounded-lg">
-              <Text className="text-[#1f2937] text-[12px]">520kcal</Text>
-            </View>
-            </View>
-            <View className="flex-row items-center mb-2">
-              <View className='w-12 h-12 bg-[#89b9ad] rounded-[4px] flex items-center justify-center mr-2'><Text className="text-white text-[12px]">밥</Text></View>
-            <View className="flex-col gap-1">
-              <Text>현미밥</Text>
-              <Text className="text-[#4b5563] text-[12px]">1공기(210g)</Text>
-            </View>
-            </View>
-            <View className="flex-row items-center mb-2">
-              <View className='w-12 h-12 bg-[#89b9ad] rounded-[4px] flex items-center justify-center mr-2'><Text className="text-white text-[12px]">밥</Text></View>
-            <View className="flex-col gap-1">
-              <Text>현미밥</Text>
-              <Text className="text-[#4b5563] text-[12px]">1공기(210g)</Text>
-            </View>
-            </View>
-            <View className="flex-row items-center mb-2">
-              <View className='w-12 h-12 bg-[#89b9ad] rounded-[4px] flex items-center justify-center mr-2'><Text className="text-white text-[12px]">밥</Text></View>
-            <View className="flex-col gap-1">
-              <Text>현미밥</Text>
-              <Text className="text-[#4b5563] text-[12px]">1공기(210g)</Text>
-            </View>
-            </View>
-           </Container>
-           </View>
-
-           <View className="mb-6">
-           <Container>
-            <View className="flex-row items-center justify-between w-full">
-            <View className="flex-row items-center mb-2">
-            <Moon size={14} strokeWidth={3.5} color="#e46592" style={{ marginRight: 4 }} />
-            <Text className="text-[#118270] text-[16px]">저녁</Text>
-            </View>
-            <View className="flex-row items-center justify-between w-min px-2 py-1.5 bg-[#f9c4d44d] rounded-lg">
-              <Text className="text-[#1f2937] text-[12px]">520kcal</Text>
-            </View>
-            </View>
-            <View className="flex-row items-center mb-2">
-              <View className='w-12 h-12 bg-[#89b9ad] rounded-[4px] flex items-center justify-center mr-2'><Text className="text-white text-[12px]">밥</Text></View>
-            <View className="flex-col gap-1">
-              <Text>현미밥</Text>
-              <Text className="text-[#4b5563] text-[12px]">1공기(210g)</Text>
-            </View>
-            </View>
-            <View className="flex-row items-center mb-2">
-              <View className='w-12 h-12 bg-[#89b9ad] rounded-[4px] flex items-center justify-center mr-2'><Text className="text-white text-[12px]">밥</Text></View>
-            <View className="flex-col gap-1">
-              <Text>현미밥</Text>
-              <Text className="text-[#4b5563] text-[12px]">1공기(210g)</Text>
-            </View>
-            </View>
-            <View className="flex-row items-center mb-2">
-              <View className='w-12 h-12 bg-[#89b9ad] rounded-[4px] flex items-center justify-center mr-2'><Text className="text-white text-[12px]">밥</Text></View>
-            <View className="flex-col gap-1">
-              <Text>현미밥</Text>
-              <Text className="text-[#4b5563] text-[12px]">1공기(210g)</Text>
-            </View>
-            </View>
-           </Container>
-           </View>
-           </View>
+    </ScrollView>
 
       {/* 태아 정보 모달 */}
       <BabyInfoModal
@@ -300,6 +293,52 @@ export default function Home({ navigation }: HomeProps) {
         onClose={() => setNutritionInfoModalVisible(false)}
         weekNumber={userInfo?.dueDate || 20}
       />
-    </ScrollView>
+
+      {/* 음식 상세 영양 정보 모달 */}
+      <Modal
+        visible={isOpenFoodDetailModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setIsOpenFoodDetailModal(false)}
+      >
+        <View className="flex-1 justify-end bg-black/50">
+          <View className="bg-white rounded-t-[20px] max-h-[90%] min-h-[60%]">
+            <View className="flex-row justify-between items-center px-4 py-4 border-b border-gray-200">
+              <Text className="text-[18px] font-medium">영양 정보</Text>
+              <TouchableOpacity onPress={() => setIsOpenFoodDetailModal(false)}>
+                <Text className="text-[16px] text-gray-500">✕</Text>
+              </TouchableOpacity>
+            </View>
+            <ScrollView className="px-4" showsVerticalScrollIndicator={false}>
+              {nutritionInfo && (
+                <NutritionDetail
+                  foodName={foodInfo?.name}
+                  portion="100g 기준"
+                  imageUri={undefined}
+                  calories={foodInfo?.calories}
+                  protein={nutritionInfo?.proteins?.value}
+                  fat={nutritionInfo?.fats?.value}
+                  carbs={nutritionInfo?.carbs?.value}
+                  detailedNutrients={Object.entries(nutritionInfo)
+                    .filter(([key]) => !['proteins', 'fats', 'carbs'].includes(key))
+                    .map(([key, value]: [string, any]) => ({
+                      kname: value?.kname || key,
+                      value: value?.value || 0,
+                      unit: value?.unit || '',
+                    }))
+                  }
+                  showButtons={true}
+                />
+              )}
+              <View className="py-10">
+                <Button text="식단에 추가" onPress={() => {}} className="w-full h-10" />
+              </View>
+            </ScrollView>
+           
+          </View>
+         
+        </View>
+      </Modal>
+    </>
   );
 }

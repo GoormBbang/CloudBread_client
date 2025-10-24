@@ -2,16 +2,17 @@ import React from "react";
 import TabNavigation from "./TabNavigation";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import SignUpNavigator from "./SignUpNavigator";
-import Home from "../screens/home/Home";
 import Profile from "../screens/profile/Profile";
-import Camera from "../screens/camera/Camera";
+import ChangeBirth from "../screens/changeBirth/ChangeBirth";
+import ChangeName from "../screens/changeName/ChangeName";
+
 
 export type RootStackParamList = {
   Onboarding: undefined;
   Tab: undefined;
   Profile: undefined;
-  Home: undefined;
-  Camera: undefined;
+  ChangeBirth: undefined;
+  ChangeName: { nickname? : string };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -19,18 +20,15 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function RootNavigator() {
   return (
     <Stack.Navigator
-     screenOptions={{
+    screenOptions={{
       headerShown: false,
-      contentStyle: {
-        backgroundColor: 'white',
-      },
-     }}
+    }}
     >
       <Stack.Screen name="Onboarding" component={SignUpNavigator} />
       <Stack.Screen name="Tab" component={TabNavigation} />
       <Stack.Screen name="Profile" component={Profile} />
-      <Stack.Screen name="Home" component={Home} />
-      <Stack.Screen name="Camera" component={Camera} />
+      <Stack.Screen name="ChangeBirth" component={ChangeBirth} />
+      <Stack.Screen name="ChangeName" component={ChangeName} />
     </Stack.Navigator>
   );
 }

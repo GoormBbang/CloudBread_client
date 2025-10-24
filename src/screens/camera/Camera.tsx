@@ -1,20 +1,21 @@
-import { CameraIcon, ImageIcon, ChevronDown, ChevronUp, Bot, Square, CircleQuestionMark } from 'lucide-react-native';
+import { CameraIcon, ImageIcon, Square, CircleQuestionMark } from 'lucide-react-native';
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, ScrollView, Image, Alert, ActivityIndicator } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 import Button from '../../components/common/Button';
 import Border from '../../components/common/Border';
 import FoodTimeModal from '../../components/common/modal/FoodTimeModal';
+import NutritionDetail from '../../components/common/NutritionDetail';
 import { postImageUpload, postSelectedFood } from '../../api/services/camera';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { TabParamList } from '../../navigation/TabNavigation';
+import Header from '../../components/common/Header';
 
 type CameraNavigationProp = BottomTabNavigationProp<TabParamList, '촬영'>;
 
 export default function Camera() {
   const navigation = useNavigation<CameraNavigationProp>();
-  const [showAllNutrition, setShowAllNutrition] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [step, setStep] = useState(0);
   const [selectedFood, setSelectedFood] = useState<string | null>(null);
@@ -25,6 +26,23 @@ export default function Camera() {
   const [foodInfo, setFoodInfo] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   
+  // 화면 포커스 해제 시 상태 초기화
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => {
+        // 다른 탭으로 이동할 때 모든 상태 초기화
+        setSelectedImage(null);
+        setStep(0);
+        setSelectedFood(null);
+        setShowFoodTimeModal(false);
+        setCandidates([]);
+        setPhotoAnalysisId(null);
+        setNutritionInfo([]);
+        setFoodInfo(null);
+        setIsLoading(false);
+      };
+    }, [])
+  );
   
 
 //이미지 업로드 및 SSE 구독
@@ -32,7 +50,7 @@ const ImageUploadApi = async (imageUri: string) => {
   
     const response = await postImageUpload(imageUri , {
       onStatus: (status) => console.log('SSE status:', status),
-      onCandidates: (candidates) => setCandidates(candidates),
+      onCandidates: (candidates) => {setCandidates(candidates); setIsLoading(false);},
       onError: (error) => console.error('SSE error:', error),
       onOpen: () => console.log('SSE opened'),
     });
@@ -99,14 +117,12 @@ const handleSelectFood = async() => {
       if (!result.canceled && result.assets && result.assets[0]) {
         console.log('이미지 선택됨:', result.assets[0].uri);
         setSelectedImage(result.assets[0].uri);
+        setIsLoading(true);
         setStep(1);
-        // Alert.alert('성공', '사진이 선택되었습니다!');
-      } else {
-      
       }
     } catch (error) {
       console.error('카메라 실행 오류:', error);
-      // Alert.alert('오류', `카메라 오류: ${error.message || error}`);
+      setIsLoading(false);
     }
   };
 
@@ -130,6 +146,7 @@ const handleSelectFood = async() => {
         // console.log('이미지 선택됨:', result.assets[0].uri);
         setSelectedImage(result.assets[0].uri);
         ImageUploadApi(result.assets[0].uri);
+        setIsLoading(true);
         setStep(1);
       }
     } catch (error) {
@@ -142,39 +159,52 @@ const handleSelectFood = async() => {
     navigation.navigate('홈');
   };
 
+  // 다시 촬영하기 핸들러
+  const handleRetake = () => {
+    setStep(0);
+    setSelectedImage(null);
+    setSelectedFood(null);
+    setCandidates([]);
+    setPhotoAnalysisId(null);
+    setNutritionInfo([]);
+    setFoodInfo(null);
+  };
+
   return (
-    <ScrollView 
-      style={{ flex: 1 }} 
-      contentContainerStyle={{ flexGrow: 1 }} 
-      className='mx-4'
-      showsVerticalScrollIndicator={false}
-    >
-     <View className="w-full bg-[#FFe2e2b3] rounded-[8px] items-center justify-center border-[#e46592] pb-8 border-[1px] mt-10">
-     <CameraIcon className="text-[#ffe2e2b3] mt-9" fill="#e46592" size={30} strokeWidth={2}/>
-     <Text className="text-[18px] mt-4">음식 사진 촬영</Text>
-     <Text className="text-[#4b5563] mt-2 mb-6">카메라로 촬영하거나 갤러리에서 선택하세요</Text>
-     <View className='px-8 w-full'>
-     
-       <Button 
-         text="카메라 촬영" 
-         onPress={openCamera} 
-         className='rounded-[8px] h-12 mb-3' 
-         icon={<CameraIcon fill="#ffffff" className='text-[#e46592]' size={22} strokeWidth={2}/>}
-       />
-       <Button 
-         text="갤러리에서 선택" 
-         onPress={openGallery}
-         variant="CUSTOM"
-         className='rounded-[8px] h-12 bg-[#ffe2e2b3]'
-         textColor="#e46592"
-         style={{
-           borderWidth: 1,
-           borderColor: '#e46592',
-         }}
-         icon={<ImageIcon fill="#ffe2e2b3" className='text-[#e46592]' size={20} strokeWidth={2}/>}
-       />
-     </View>
-     </View>
+    <View style={{ flex: 1 }}>
+      <Header title="촬영" />
+      <ScrollView 
+        style={{ flex: 1 }} 
+        contentContainerStyle={{ flexGrow: 1 }} 
+        className='mx-4'
+        showsVerticalScrollIndicator={false}
+      >
+       <View className="w-full bg-[#FFe2e2b3] rounded-[8px] items-center justify-center border-[#e46592] pb-8 border-[1px] mt-10">
+       <CameraIcon className="text-[#ffe2e2b3] mt-9" fill="#e46592" size={30} strokeWidth={2}/>
+       <Text className="text-[18px] mt-4">음식 사진 촬영</Text>
+       <Text className="text-[#4b5563] mt-2 mb-6">카메라로 촬영하거나 갤러리에서 선택하세요</Text>
+       <View className='px-8 w-full'>
+       
+         <Button 
+           text="카메라 촬영" 
+           onPress={openCamera} 
+           className='rounded-[8px] h-12 mb-3' 
+           icon={<CameraIcon fill="#ffffff" className='text-[#e46592]' size={22} strokeWidth={2}/>}
+         />
+         <Button 
+           text="갤러리에서 선택" 
+           onPress={openGallery}
+           variant="CUSTOM"
+           className='rounded-[8px] h-12 bg-[#ffe2e2b3]'
+           textColor="#e46592"
+           style={{
+             borderWidth: 1,
+             borderColor: '#e46592',
+           }}
+           icon={<ImageIcon fill="#ffe2e2b3" className='text-[#e46592]' size={20} strokeWidth={2}/>}
+         />
+       </View>
+       </View>
 
      {step===1&&(
       <View className='w-full h-fit mt-4 border-[1px] border-gray-300 rounded-[8px] p-4 bg-white'>
@@ -221,104 +251,22 @@ const handleSelectFood = async() => {
       </View>
      )}
 
-{/* 로딩 화면 */}
-{isLoading && (
-  <View className='w-full h-fit mt-4 border-[1px] border-gray-300 rounded-[8px] p-8 bg-white items-center justify-center'>
-    <View className='w-full py-12 items-center justify-center'>
-      <ActivityIndicator size="large" color="#e46592" />
-      <Text className='text-[16px] font-medium text-[#e46592] mt-6'>영양 정보를 불러오는 중...</Text>
-      <Text className='text-[12px] text-[#4b5563] mt-2'>잠시만 기다려주세요</Text>
-    </View>
-  </View>
-)}
-
 {step === 2 && !isLoading && (
-     <View className='w-full h-fit mt-4 border-[1px] border-gray-300 rounded-[8px] p-4'>
-      <View className='w-full py-4 items-center justify-center'>
-        {selectedImage ? (
-          <Image 
-            source={{ uri: selectedImage }} 
-            style={{ width: 400, height:300, borderRadius: 8 }}
-            resizeMode="contain"
-          />
-        ) : (
-          <View className='w-48 h-32 bg-gray-100 rounded-[8px] items-center justify-center'>
-            <Text className='text-gray-400'>사진을 촬영해주세요</Text>
-          </View>
-        )}
-      </View>
-
-      <View className='w-full h-fit border-t-[1px] border-gray-300 pt-4 px-1'>
-        <View className='w-full h-fit flex-row items-end'>
-          <Text className='text-[20px] font-medium mr-2'>{foodInfo?.name}</Text>
-          {/* 모든 음식의 양을 100g 기준으로 표시 */}
-          <Text className='text-[14px] font-light text-[#4b5563]'>100g 기준</Text>
-          </View>
-          <View className='w-full flex-row justify-between mt-4'>
-            <View className='flex-1 flex-col justify-center items-center'>
-              <Text className='text-[24px] font-medium text-[#e46592]'>{foodInfo?.calories}</Text>
-              <Text className='text-[12px] font-light text-[#4b5563]'>칼로리</Text>
-            </View>
-           
-              <View className='flex-1 flex-col justify-center items-center'>
-                <Text className='text-[24px] font-medium text-[#e46592]'>320g</Text>
-                <Text className='text-[12px] font-light text-[#4b5563]'>단백질</Text>
-              </View>
-            <View className='flex-1 flex-col justify-center items-center'>
-              <Text className='text-[24px] font-medium text-[#e46592]'>12g</Text>
-              <Text className='text-[12px] font-light text-[#4b5563]'>지방</Text>
-            </View>
-            <View className='flex-1 flex-col justify-center items-center'>
-              <Text className='text-[24px] font-medium text-[#e46592]'>25g</Text>
-              <Text className='text-[12px] font-light text-[#4b5563]'>탄수화물</Text>
-            </View>
-          </View>
-          
-           <View className='w-full mt-4'>
-             <Text className='text-[14px] text-[#4b5563] mb-3'>상세 영양 정보</Text>
-
-             {nutritionInfo && nutritionInfo.length > 0 ? (
-               nutritionInfo.slice(0, showAllNutrition ? nutritionInfo.length : 4).map((item, index)=>(
-                <View key={index} className='w-full mt-3'>
-                 <View className='flex-row justify-between mb-2 w-full'>
-                   <Text className='text-[14px]'>{item.kname}</Text>
-                   <Text className='text-[14px] font-medium'>{item.value}{item.unit}</Text>
-                 </View>
-                 <Border/>
-                </View>
-               ))
-             ) : (
-               <Text className='text-[12px] text-gray-400 mt-2'>영양 정보가 없습니다.</Text>
-             )}
-             
-             {nutritionInfo && nutritionInfo.length > 4 && (
-               <View className='w-full mt-4'>
-                 <Button
-                   text={showAllNutrition ? "접기" : "더보기"}
-                   onPress={() => setShowAllNutrition(!showAllNutrition)}
-                   variant="CUSTOM"
-                   className='h-10 bg-gray-100 rounded-[6px]'
-                   textColor="#4b5563"
-                   icon={showAllNutrition ? 
-                     <ChevronUp size={16} color="#4b5563" /> : 
-                     <ChevronDown size={16} color="#4b5563" />
-                   }
-                 />
-               </View>
-             )}
-           
-
-
-            </View>
-            <View>
-  <Button text="식단에 추가하기" onPress={() => {setShowFoodTimeModal(true)}} className='h-11 bg-main-pink rounded-[8px] mb-2' />
-     <Button text="AI에게 물어보기" onPress={() => {}} className='h-11 bg-white rounded-[8px] border-[0.5px] border-main-pink mb-2' textColor='#e46592' icon={<Image source={require('../../../assets/image/bot.png')} style={{ width: 16, height: 16 }} resizeMode="contain" />} />
-      <Button text="다시 촬영하기" onPress={() => {}} className='h-11 bg-white rounded-[8px] border-[1px] border-gray-300' textColor='#4b5563'  />
-</View>
-
-      </View>
-       
-      </View>
+      <NutritionDetail
+        foodName={foodInfo?.name}
+        portion="100g 기준"
+        imageUri={selectedImage || undefined}
+        calories={foodInfo?.calories}
+        protein={320}
+        fat={12}
+        carbs={25}
+        detailedNutrients={nutritionInfo}
+        onAddToMeal={() => setShowFoodTimeModal(true)}
+        onAskAI={() => {
+          console.log('AI에게 물어보기');
+        }}
+        onRetake={handleRetake}
+      />
      )}
 
 {/* 식단 시간 모달 */}
@@ -329,6 +277,26 @@ const handleSelectFood = async() => {
   onClose={() => setShowFoodTimeModal(false)} 
   onSuccess={handleNavigateToHome}
 />
-    </ScrollView>
+      </ScrollView>
+
+      {/* 로딩 화면 - 화면 전체 중앙에 고정 */}
+      {isLoading && (
+        <View style={{ 
+          position: 'absolute', 
+          top: 0, 
+          left: 0, 
+          right: 0, 
+          bottom: 0, 
+          backgroundColor: 'white',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 999
+        }}>
+          <ActivityIndicator size="large" color="#e46592" />
+          <Text className='text-[16px] font-medium text-[#e46592] mt-6'>영양 정보를 분석 중입니다.</Text>
+          <Text className='text-[12px] text-[#4b5563] mt-2'>잠시만 기다려주세요.</Text>
+        </View>
+      )}
+    </View>
   ); 
 }

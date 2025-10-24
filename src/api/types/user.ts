@@ -37,3 +37,9 @@ export interface UserHealthInfoPayload {
   allergyIds?: number[];
   otherHealthFactors?: string;
 }
+
+// 프로필 (이름, 생년월일)
+export interface UserProfile {
+  nickname: string;
+  birthDate: string;
+}
