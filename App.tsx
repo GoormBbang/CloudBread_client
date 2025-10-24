@@ -4,6 +4,7 @@ import { View} from "react-native";
 import RootNavigator from "./src/navigation/RootNavigator";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import Toast from 'react-native-toast-message';
 
 const queryClient = new QueryClient();
 export default function App() {
@@ -13,6 +14,7 @@ export default function App() {
         <NavigationContainer>
           <RootNavigator />
         </NavigationContainer>
+        <Toast />
       </View>
     </QueryClientProvider>
   );

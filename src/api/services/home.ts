@@ -3,7 +3,7 @@ import { ApiResponse, NutritionStats } from "../types/common";
 
 export const getUserInfo = async (): Promise<any> => {
   const response = await apiClient.get<ApiResponse<any>>('/users/user-summary');
-  // console.log('🔑 getUserInfo:', response.data);
+  console.log('🔑 getUserInfo:', response.data);
   return response.data;
 };
 
@@ -37,14 +37,27 @@ export const getThisWeekMomTips = async (): Promise<any> => {
 
 //이번 주차 영양 정보 팁 조회
 export const getThisWeekNutritionTips = async (): Promise<any> => {
-  const response = await apiClient.get<ApiResponse<any>>('/users/me/tip/nutrition');
+  const response = await apiClient.get('/users/me/tip/nutrition');
   // console.log('🔑 getThisWeekNutritionTips:', response.data);
   return response.data;
 };
 
-//오늘의 AI 추천 식단 조회
-export const getTodayAIRecommendation = async (): Promise<any> => {
-  const response = await apiClient.get<ApiResponse<any>>('/meal-plans/refresh');
-  console.log('🔑 getTodayAIRecommendation:', response.data);
+//오늘의 AI 추천 식단 조회 -> 새로고침
+export const postTodayFoodListRefresh = async (): Promise<any> => {
+  const response = await apiClient.post('/meal-plans/refresh');
+  console.log('🔑 postTodayFoodListRefresh:', response.data);
+  return response.data;
+};
+
+export const getTodayFoodList = async (): Promise<any> => {
+  const response = await apiClient.post('/meal-plans/today');
+  console.log('🔑 getTodayFoodList:', response.data);
+  return response.data;
+};
+
+//오늘의 AI 추천 식단 상세 영양 정보 조회
+export const getFoodNutritionDetail = async (foodId: string): Promise<any> => {
+  const response = await apiClient.get(`/foods/${foodId}/detail`);
+  console.log('🔑 getFoodNutritionDetail:', response.data);
   return response.data;
 };

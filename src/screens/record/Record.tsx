@@ -1,3 +1,4 @@
+import Header from "../../components/common/Header";
 import React, { useState, useMemo, useEffect } from "react";
 import {
   View,
@@ -233,6 +234,7 @@ export default function Record() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
+       <Header title="기록" />
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
         <Calendar
           current={currentDate.toISOString().split("T")[0]}

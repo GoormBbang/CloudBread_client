@@ -29,72 +29,12 @@ const Tab = createBottomTabNavigator<TabParamList>();
 
 export default function TabNavigation() {
   return (
-    <Tab.Navigator
-      screenOptions={{
-        headerShown: true,
-        headerStyle: {
-          backgroundColor: "white",
-        },
-        headerTintColor: "black", // 뒤로가기 버튼과 텍스트 색상
-        headerTitleStyle: {
-          fontWeight: "bold",
-        },
-        headerLeft: () => (
-          <TouchableOpacity style={{ marginLeft: 16 }}>
-            <ArrowLeft size={24} color="black" />
-          </TouchableOpacity>
-        ),
-        tabBarActiveTintColor: "#FF69B4", // 메인핑크 색상
-        tabBarInactiveTintColor: "black", // 비활성 색상 (회색)
-      }}
-    >
-      <Tab.Screen
-        name="홈"
-        component={Home}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <House size={18} color={focused ? "#FF69B4" : "black"} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="챗봇"
-        component={ChatBot}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <Bot size={18} color={focused ? "#FF69B4" : "black"} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="촬영"
-        component={Camera}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <CameraIcon size={18} color={focused ? "#FF69B4" : "black"} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="기록"
-        component={RecordNavigator}
-        options={{
-          headerShown: false,
-          tabBarIcon: ({ focused }) => (
-            <CalendarDays size={18} color={focused ? "#FF69B4" : "black"} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="설정"
-        component={SettingNavigator}
-        options={{
-          headerShown: false,
-          tabBarIcon: ({ focused }) => (
-            <UserRound size={18} color={focused ? "#FF69B4" : "black"} />
-          ),
-        }}
-      />
+    <Tab.Navigator screenOptions={{ headerShown: false }}>
+      <Tab.Screen name="홈" component={Home} options={{ tabBarIcon: ({ focused }) => <House size={18} color={focused ? '#FF69B4' : 'black'} /> }} />
+      <Tab.Screen name="챗봇" component={ChatBot} options={{ tabBarIcon: ({ focused }) => <Bot size={18} color={focused ? '#FF69B4' : 'black'} /> }} />
+      <Tab.Screen name="촬영" component={Camera} options={{ tabBarIcon: ({ focused }) => <CameraIcon size={18} color={focused ? '#FF69B4' : 'black'} /> }} />
+      <Tab.Screen name="기록" component={RecordNavigato} options={{ tabBarIcon: ({ focused }) => <CalendarDays size={18} color={focused ? '#FF69B4' : 'black'} /> }} />
+      <Tab.Screen name="설정" component={SettingNavigator} options={{ tabBarIcon: ({ focused }) => <UserRound size={18} color={focused ? '#FF69B4' : 'black'} /> }} />
     </Tab.Navigator>
   );
 }

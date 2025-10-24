@@ -5,8 +5,9 @@ import {
   NativeStackNavigationProp,
 } from "@react-navigation/native-stack";
 import SignUpNavigator from "./SignUpNavigator";
-import Home from "../screens/home/Home";
 import Profile from "../screens/profile/Profile";
+import ChangeBirth from "../screens/changeBirth/ChangeBirth";
+import ChangeName from "../screens/changeName/ChangeName";
 import Camera from "../screens/camera/Camera";
 import NutritionDetailScreen from "../screens/record/NutritionDetailScreen";
 
@@ -17,6 +18,8 @@ export type RootStackParamList = {
   Onboarding: undefined;
   Tab: undefined;
   Profile: undefined;
+  ChangeBirth: undefined;
+  ChangeName: { nickname? : string };
   Home: undefined;
   Camera: undefined;
   NutritionDetail: undefined;
@@ -37,6 +40,8 @@ export default function RootNavigator() {
       <Stack.Screen name="Onboarding" component={SignUpNavigator} />
       <Stack.Screen name="Tab" component={TabNavigation} />
       <Stack.Screen name="Profile" component={Profile} />
+      <Stack.Screen name="ChangeBirth" component={ChangeBirth} />
+      <Stack.Screen name="ChangeName" component={ChangeName} />
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="Camera" component={Camera} />
       <Stack.Screen name="NutritionDetail" component={NutritionDetailScreen} />

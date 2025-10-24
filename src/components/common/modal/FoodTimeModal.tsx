@@ -1,20 +1,65 @@
 import { Square, X } from "lucide-react-native";
 import { useEffect, useRef, useState } from "react";
-import { Animated, Dimensions, Modal, ScrollView, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
+import { Alert, Animated, Dimensions, Modal, ScrollView, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import Border from "../Border";
 import Button from "../Button";
+import { postSelectedTime } from "../../../api/services/camera";
 
 interface FoodTimeModalProps {
   visible: boolean;
+  foodId: string;
+  photoAnalysisId: string;
   onClose: () => void;
+  onSuccess?: () => void;
 }
+
+const timeList = [
+  {
+    name: "아침",
+    value: "BREAKFAST",
+  },
+  {
+    name: "점심",
+    value: "LUNCH",
+  },
+  {
+    name: "저녁",
+    value: "DINNER",
+  },
+]
 
 const {height:screenHeight} = Dimensions.get('window');
 
-export default function FoodTimeModal({visible,onClose}:FoodTimeModalProps) {
+export default function FoodTimeModal({visible,onClose, foodId, photoAnalysisId, onSuccess}:FoodTimeModalProps) {
   const slideAnim = useRef(new Animated.Value(screenHeight)).current;
   //화면 높이만큼 아래에 숨겨두고, 보일 때 0으로 이동
   const [selectedTime, setSelectedTime] = useState<string>("");
+
+const submitSelectedTime = async () => {
+  const res = await postSelectedTime({foodId, photoAnalysisId, mealType: selectedTime, intakePercent: 100});
+  if(res.isSuccess) {
+    Alert.alert("성공", "섭취 기록이 저장되었습니다!", [
+      {
+        text: "확인",
+        onPress: () => {
+          // Alert 확인 후 모달 닫고 홈으로 이동
+          Animated.timing(slideAnim, {
+            toValue: screenHeight,
+            duration: 250,
+            useNativeDriver: true,
+          }).start(() => {
+            onClose();
+            // 애니메이션 완료 후 홈으로 이동
+            if(onSuccess) {
+              setTimeout(() => onSuccess(), 100);
+            }
+          });
+        }
+      }
+    ]);
+  }
+
+}
 
   useEffect(() => {
     if (visible) {
@@ -40,6 +85,7 @@ export default function FoodTimeModal({visible,onClose}:FoodTimeModalProps) {
       useNativeDriver: true,
     }).start(() => {
         onClose();
+        
     });
   };
   return (
@@ -66,26 +112,24 @@ export default function FoodTimeModal({visible,onClose}:FoodTimeModalProps) {
               <X size={20} color="#6B7280" />
             </TouchableOpacity>
             </View>
-            <ScrollView className="w-full h-full bg-white rounded-lg p-4">
-              <View className="w-full h-fit flex-row justify-between items-center">
-                <Text className="text-[14px] font-medium text-gray-800 py-4">아침</Text>
-                <Square strokeWidth={2} size={20} color={selectedTime === "아침" ? "#E46592" : "#6B7280"} fill={selectedTime === "아침" ? "#E46592" : "transparent"} onPress={() => setSelectedTime("아침")} />
-              </View>
-              <Border borderWidth='thin' borderColor='gray' />
-              <View className="w-full h-fit flex-row justify-between items-center">
-                <Text className="text-[14px] font-medium text-gray-800 py-4">점심</Text>
-                <Square strokeWidth={2} size={20} color={selectedTime === "점심" ? "#E46592" : "#6B7280"} fill={selectedTime === "점심" ? "#E46592" : "transparent"} onPress={() => setSelectedTime("점심")} />
-              </View>
-              <Border borderWidth='thin' borderColor='gray' />
-              <View className="w-full h-fit flex-row justify-between items-center">
-                <Text className="text-[14px] font-medium text-gray-800 py-4">저녁</Text>
-                <Square strokeWidth={2} size={20} color={selectedTime === "저녁" ? "#E46592" : "#6B7280"} fill={selectedTime === "저녁" ? "#E46592" : "transparent"} onPress={() => setSelectedTime("저녁")} />
-              </View>
-
-              <Button text="완료" onPress={handleClose} className="h-11 bg-main-pink rounded-[8px] mt-6" />
+            <View className="w-full h-fit">
+            <ScrollView className="w-full bg-white rounded-lg p-4">
+              
+              {timeList.map((time) => (
+                <View key={time.value}>
+                    <View className="w-full h-fit flex-row justify-between items-center">
+                    <Text className="text-[14px] font-medium text-gray-800 py-4">{time.name}</Text>
+                    <Square strokeWidth={2} size={20} color={selectedTime === time.value ? "#E46592" : "#6B7280"} fill={selectedTime === time.value ? "#E46592" : "transparent"} onPress={() => setSelectedTime(time.value)} />
+                  </View>
+                  <Border borderWidth='thin' borderColor='gray' />
+                </View>
+              ))}
+              
             </ScrollView>
-        </Animated.View>
+            </View>
+            <Button text="완료" onPress={submitSelectedTime} className="h-11 bg-main-pink rounded-[8px] mt-4" />
+          </Animated.View>
         </View>
-    </Modal>
-  );
+      </Modal>  
+    );
 }

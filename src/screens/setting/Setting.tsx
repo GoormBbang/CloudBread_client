@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
+import Header from "../../components/common/Header";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { UserRound, Bell, Shield } from "lucide-react-native";
@@ -34,6 +35,7 @@ export default function Setting() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
+          <Header title="설정" />
       <View className="p-4">
         <SettingItem
           icon={<UserRound size={24} color="black" />}

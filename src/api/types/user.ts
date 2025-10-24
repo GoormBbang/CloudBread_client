@@ -38,6 +38,13 @@ export interface UserHealthInfoPayload {
   otherHealthFactors?: string;
 }
 
+
+// 프로필 (이름, 생년월일)
+export interface UserProfile {
+  nickname: string;
+  birthDate: string;
+}
+
 // 업데이트시 전송할 유저정보
 export interface UpdateUserPayload {
   nickname?: string;
@@ -49,3 +56,4 @@ export interface UpdateUserPayload {
   allergyIds?: number[];
   otherHealthFactors?: string;
 }
+

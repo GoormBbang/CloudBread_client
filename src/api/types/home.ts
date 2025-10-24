@@ -2,6 +2,7 @@ export interface UserInfoType {
   id: number;
   nickname: string;
   dueDate: number | null;
+  birth_date?: string | null;
   profileImageUrl?: string;
 }
 
@@ -17,3 +18,16 @@ title:string;
 description:string;
 }
 
+export interface TodayAIRecommendationType {
+  mealType: string;
+  totalKcal: number;
+  items: TodayFoodListType[];
+}
+
+export interface TodayFoodListType{
+  foodId: number;
+  name: string;
+  portionLabel: string;
+  estCalories: number;
+  foodCategory: string;
+}
