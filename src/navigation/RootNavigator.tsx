@@ -11,6 +11,7 @@ import ChangeName from "../screens/changeName/ChangeName";
 import Camera from "../screens/camera/Camera";
 import NutritionDetailScreen from "../screens/record/NutritionDetailScreen";
 import Home from "../screens/home/Home";
+import SettingHealthScreen from "../screens/setting/SettingHealthScreen";
 
 export type RootStackNavigationProp =
   NativeStackNavigationProp<RootStackParamList>;
@@ -20,10 +21,11 @@ export type RootStackParamList = {
   Tab: undefined;
   Profile: undefined;
   ChangeBirth: undefined;
-  ChangeName: { nickname? : string };
+  ChangeName: { nickname?: string };
   Home: undefined;
   Camera: undefined;
-  NutritionDetail: undefined;
+  NutritionDetail: { date: string };
+  EditHealthProfile: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -46,6 +48,7 @@ export default function RootNavigator() {
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="Camera" component={Camera} />
       <Stack.Screen name="NutritionDetail" component={NutritionDetailScreen} />
+      <Stack.Screen name="EditHealthProfile" component={SettingHealthScreen} />
     </Stack.Navigator>
   );
 }

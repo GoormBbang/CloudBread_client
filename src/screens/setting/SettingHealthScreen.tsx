@@ -21,6 +21,7 @@ import {
 } from "../../hooks/user";
 import { useAuthStore } from "../../store/authStore";
 import { useNavigation } from "@react-navigation/native";
+import Header from "../../components/common/Header";
 
 // 타입 정의 (api/types/user.ts 파일 등에 위치하는 것이 이상적)
 interface Item {
@@ -136,6 +137,7 @@ export default function SettingHealthScreen() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flex: 1 }}
     >
+      <Header title="개인 정보 수정" />
       <ScrollView
         className="flex-1 bg-white flex"
         contentContainerStyle={{ padding: 24 }}
