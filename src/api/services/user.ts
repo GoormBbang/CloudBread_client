@@ -12,7 +12,9 @@ export const getMetadata = async (): Promise<ApiResponse<MetadataResponse>> => {
 
 // 현재 로그인된 사용자의 상세 정보를 조회
 export const getMyProfile = async (): Promise<ApiResponse<any>> => {
+  console.log("여기 들어옴");
   const response = await apiClient.get<ApiResponse<any>>("/users/me");
+  console.log("getMyProfile API 원본 응답:", response);
   return response.data;
 };
 
@@ -24,5 +26,11 @@ export const updateMyProfile = async (
     "/users/me",
     payload
   );
+  return response.data;
+};
+
+export const logoutUser = async () => {
+  // 로그아웃은 보통 POST를 사용하며, 특별한 응답 본문이 없을 수 있습니다.
+  const response = await apiClient.post("/users/logout");
   return response.data;
 };

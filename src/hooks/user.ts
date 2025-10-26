@@ -4,6 +4,7 @@ import {
   getMyProfile,
   getMetadata,
   updateMyProfile,
+  logoutUser,
 } from "../api/services/user";
 import { UpdateUserPayload } from "../api/types/user";
 
@@ -48,5 +49,12 @@ export const useGetMetadata = () => {
   return useQuery({
     queryKey: ["metadata"],
     queryFn: getMetadata,
+  });
+};
+
+//로그아웃
+export const useLogout = () => {
+  return useMutation({
+    mutationFn: logoutUser,
   });
 };

@@ -12,6 +12,7 @@ import Camera from "../screens/camera/Camera";
 import NutritionDetailScreen from "../screens/record/NutritionDetailScreen";
 import Home from "../screens/home/Home";
 import SettingHealthScreen from "../screens/setting/SettingHealthScreen";
+import ChatBotDetail from "../screens/chatbot/ChatBotDetail";
 
 export type RootStackNavigationProp =
   NativeStackNavigationProp<RootStackParamList>;
@@ -26,6 +27,7 @@ export type RootStackParamList = {
   Camera: undefined;
   NutritionDetail: { date: string };
   EditHealthProfile: undefined;
+  ChatBotDetail: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -49,6 +51,7 @@ export default function RootNavigator() {
       <Stack.Screen name="Camera" component={Camera} />
       <Stack.Screen name="NutritionDetail" component={NutritionDetailScreen} />
       <Stack.Screen name="EditHealthProfile" component={SettingHealthScreen} />
+      <Stack.Screen name="ChatBotDetail" component={ChatBotDetail} />
     </Stack.Navigator>
   );
 }

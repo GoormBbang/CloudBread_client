@@ -31,7 +31,8 @@
         "android.permission.WRITE_EXTERNAL_STORAGE"
       ],
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.cloudbread.client"
     },
     "web": {
       "favicon": "./assets/favicon.png"
