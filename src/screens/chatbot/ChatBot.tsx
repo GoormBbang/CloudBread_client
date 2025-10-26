@@ -1,4 +1,3 @@
-// src/screens/ai-chat/ChatBot.tsx
 import React, { useState } from "react";
 import {
   View,
@@ -7,7 +6,6 @@ import {
   TextInput,
   TouchableOpacity,
   KeyboardAvoidingView,
-  Platform,
   ActivityIndicator,
   SafeAreaView,
 } from "react-native";
@@ -16,44 +14,37 @@ import Header from "../../components/common/Header";
 import CategoryCard from "../../components/chatbot/CategoryCard";
 import FaqButton from "../../components/chatbot/FaqButton";
 import AssistantHeader from "../../components/chatbot/AssistantHeader";
-import { useCreateChatSession } from "../../hooks/chatbot"; // [수정]
-import { AiChatTopic } from "../../api/types/chatbot"; // [수정]
+import { useCreateChatSession } from "../../hooks/chatbot";
+import { AiChatTopic } from "../../api/types/chatbot";
 
 export default function ChatBot() {
   const [message, setMessage] = useState("");
 
-  // --- [수정] ---
   const { mutate: createSession, isPending: isCreatingSession } =
     useCreateChatSession();
-  // --- [수정 끝] ---
 
-  // 1. '어떤 것이 궁금하신가요?' 카드 클릭 핸들러
   const handleCategoryPress = (topic: AiChatTopic) => {
-    // API 훅 호출 (초기 메시지 없음)
+    console.log("클릭한 토픽", topic);
     createSession({ topic });
   };
 
-  // 2. '자주 묻는 질문' 클릭 핸들러
   const handleFaqPress = (question: string) => {
-    // API 훅 호출 (초기 메시지로 FAQ 질문 전달)
     createSession({
-      topic: "PREGNANCY", // FAQ는 '임신' 토픽으로 고정
-      initialMessage: question, // [추가]
+      topic: "PREGNANCY",
+      initialMessage: question,
     });
   };
 
-  // 3. 하단 입력창 전송 핸들러
+  // 하단 입력창 전송 핸들러
   const handleSendFreeQuestion = () => {
     if (message.trim().length === 0) return;
-    // API 훅 호출 (초기 메시지로 입력 텍스트 전달)
     createSession({
       topic: "FREE",
       initialMessage: message,
     });
-    setMessage(""); // 입력창 비우기
+    setMessage("");
   };
 
-  // (카테고리 및 faqs 데이터는 동일)
   const categories = [
     {
       icon: Utensils,
@@ -62,7 +53,7 @@ export default function ChatBot() {
       topic: "FOOD_INFO",
     },
     {
-      icon: Pill, // [수정] 아이콘 변경
+      icon: Pill,
       title: "임부 금기 약물",
       description: "부작용 및 복용 가능 여부",
       topic: "PREGNANCY_DRUG",
@@ -141,14 +132,13 @@ export default function ChatBot() {
             <Send size={20} color="white" />
           </TouchableOpacity>
         </View>
-
-        {isCreatingSession && (
-          <View className="absolute inset-0 bg-black/30 justify-center items-center">
-            <ActivityIndicator size="large" color="#FFFFFF" />
-            <Text className="text-white mt-2">채팅방에 입장하는 중...</Text>
-          </View>
-        )}
       </KeyboardAvoidingView>
+      {isCreatingSession && (
+        <View className="absolute inset-0 bg-black/30 justify-center items-center">
+          <ActivityIndicator size="large" color="#FFFFFF" />
+          <Text className="text-white mt-2">채팅방에 입장하는 중...</Text>
+        </View>
+      )}
     </View>
   );
 }

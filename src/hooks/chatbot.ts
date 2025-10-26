@@ -41,35 +41,30 @@ const TOPIC_TITLES: Record<AiChatTopic, string> = {
   FOOD_INFO: "음식 정보",
   PREGNANCY_DRUG: "임부 금기 약물",
   PREGNANCY: "임신 관련",
-  FREE: "자유 질문", // (FREE는 보통 이 로직을 타지 않지만, 완전성을 위해 추가)
+  FREE: "자유 질문",
 };
 
 type CreateSessionVariables = {
   topic: AiChatTopic;
-  initialMessage?: string; // API에는 없지만, onSuccess 로직에서 필요
+  initialMessage?: string;
 };
-
 export const useCreateChatSession = () => {
   const navigation = useNavigation<NavigationProp>();
 
   return useMutation<void, Error, CreateSessionVariables, unknown>({
     mutationFn: async (variables: CreateSessionVariables) => {
       const { topic, initialMessage } = variables;
-
-      // 1. API 호출 전, 기존 세션 확인
       const existingSession = await getActiveSession();
 
-      // 2. [Case 1: 세션 재사용]
-      // 기존 세션이 있고, 선택한 토픽이 현재 토픽과 같은 경우
+      // 기존 세션이 있다면
       if (existingSession) {
-        // 재사용할 세션을 만듭니다.
+        // 세션이 존재하면 API 호출 없이, 요청받은 새 'topic'으로 덮어씀
         const updatedSession: ChatSessionData = {
           ...existingSession,
-          messages: [...existingSession.messages], // 메시지 배열 복사
+          currentTopic: topic,
+          messages: [...existingSession.messages],
         };
 
-        // (기존 onSuccess 로직과 동일)
-        // initialMessage가 있다면 메시지 목록에 추가
         if (initialMessage) {
           const userMsg: Message = {
             role: "user",
@@ -78,7 +73,7 @@ export const useCreateChatSession = () => {
           };
           updatedSession.messages.push(userMsg);
 
-          // 하드코딩된 답변 확인
+          // 하드코딩된 답변
           const hardcodedAnswer = getHardcodedAnswer(initialMessage);
           if (hardcodedAnswer) {
             const assistantMsg: Message = {
@@ -89,7 +84,6 @@ export const useCreateChatSession = () => {
             updatedSession.messages.push(assistantMsg);
           }
         } else if (topic !== "FREE") {
-          // topic을 사용해 TOPIC_TITLES 객체에서 title을 가져옴
           const title = TOPIC_TITLES[topic];
 
           const introBotMessage: Message = {
@@ -97,17 +91,15 @@ export const useCreateChatSession = () => {
             // title이 존재할 경우에만 메시지 생성
             content: title
               ? `${title}에 대해 어떤 점이 궁금하신가요?`
-              : "어떤 점이 궁금하신가요?", // (혹시 모를 예외 처리)
+              : "어떤 점이 궁금하신가요?",
             timestamp: new Date().toISOString() + "_a",
           };
           updatedSession.messages.push(introBotMessage);
         }
-        // 수정된 세션을 저장 (API 호출 없음)
         await saveActiveSession(updatedSession);
       } else {
-        // 3. [Case 2: 세션 신규 생성]
-        // 기존 세션이 없거나, 토픽이 다른 경우
-        await clearActiveSession(); // 기존 세션(있다면) 삭제
+        // 기존 세션이 없는 경우
+        await clearActiveSession();
 
         // API를 호출하여 새 세션 생성
         const data = await createChatSession({ topic });
@@ -122,8 +114,6 @@ export const useCreateChatSession = () => {
           messages: [],
         };
 
-        // (기존 onSuccess 로직과 동일)
-        // initialMessage가 있다면 메시지 목록에 추가
         if (initialMessage) {
           const userMsg: Message = {
             role: "user",
@@ -142,31 +132,24 @@ export const useCreateChatSession = () => {
             newSession.messages.push(assistantMsg);
           }
         } else if (topic !== "FREE") {
-          // topic을 사용해 TOPIC_TITLES 객체에서 title을 가져옴
           const title = TOPIC_TITLES[topic];
-
           const introBotMessage: Message = {
             role: "assistant",
-            // title이 존재할 경우에만 메시지 생성
             content: title
               ? `${title}에 대해 어떤 점이 궁금하신가요?`
-              : "어떤 점이 궁금하신가요?", // (혹시 모를 예외 처리)
+              : "어떤 점이 궁금하신가요?",
             timestamp: new Date().toISOString() + "_a",
           };
           newSession.messages.push(introBotMessage);
         }
-
-        // 새 세션을 저장
         await saveActiveSession(newSession);
       }
-    }, // --- mutationFn 끝 ---
+    },
 
-    // 4. [수정] onSuccess는 네비게이션만 담당
     onSuccess: () => {
       navigation.navigate("ChatBotDetail");
     },
 
-    // 5. onError는 동일
     onError: (error: Error) => {
       console.error("AI 채팅 세션 생성/업데이트 실패:", error);
       Alert.alert("오류", "채팅을 시작하지 못했습니다.");
@@ -174,27 +157,20 @@ export const useCreateChatSession = () => {
   });
 };
 
-// --- [수정 2] usePostChatMessage ---
-
-// 1. `mutate` 함수에 전달될 Variables 타입을 정의합니다.
 type PostMessageVariables = {
   sessionId: string;
   topic: AiChatTopic;
   message: string;
 };
 
-/**
- * AI 채팅 메시지를 전송하는 Mutation Hook (ChatBotDetail.tsx용)
- */
+// 메시지 전송용
 export const usePostChatMessage = () => {
-  // 2. useMutation에 제네릭 타입을 명시합니다.
   return useMutation<
     ApiResponse<PostMessageResponse>, // TData
     Error, // TError
     PostMessageVariables, // TVariables
     unknown // TContext
   >({
-    // 3. [FIX] mutationFn을 객체 내부에 정의합니다.
     mutationFn: postChatMessage,
   });
 };

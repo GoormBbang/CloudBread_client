@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -15,6 +15,7 @@ import {
   getActiveSession,
   saveActiveSession,
   ChatSessionData,
+  clearActiveSession,
 } from "../../store/chatStorage";
 import { Message, AiChatTopic } from "../../api/types/chatbot";
 import { usePostChatMessage } from "../../hooks/chatbot";
@@ -22,6 +23,15 @@ import AssistantHeader from "../../components/chatbot/AssistantHeader";
 
 import MessageInputBar from "../../components/chatbot/MessageInputBar";
 import MessageBubble from "../../components/chatbot/MessageBubble";
+
+const isSessionError = (error: any): boolean => {
+  try {
+    const errorCode = (error as any)?.response?.data?.code;
+    return errorCode === "SESSION_404" || errorCode === "SESSION_402";
+  } catch (e) {
+    return false;
+  }
+};
 
 export default function ChatBotDetail({ navigation }: any) {
   const [session, setSession] = useState<ChatSessionData | null>(null);
@@ -33,7 +43,7 @@ export default function ChatBotDetail({ navigation }: any) {
 
   const scrollViewRef = useRef<ScrollView>(null);
 
-  const callPostMessage = React.useCallback(
+  const callPostMessage = useCallback(
     (
       textToSend: string,
       topic: AiChatTopic,
@@ -61,29 +71,51 @@ export default function ChatBotDetail({ navigation }: any) {
             });
           },
           onError: (error) => {
-            console.error(error);
-            Alert.alert("오류", "메시지 전송에 실패했습니다.");
-            if (optimisticMessage) {
-              setMessages((prev) =>
-                prev.filter(
-                  (msg) => msg.timestamp !== optimisticMessage.timestamp
-                )
+            if (isSessionError(error)) {
+              console.warn(
+                "세션 에러 감지 (SESSION_404 or 402). 세션 초기화 및 뒤로가기."
               );
+              clearActiveSession().catch((err) => {
+                console.error("세션 에러 처리 중 스토리지 클리어 실패:", err);
+              });
+              setMessages([]);
+              Alert.alert(
+                "세션 만료",
+                "세션이 만료되었습니다. 잠시 후 다시 시도해주세요.",
+                [
+                  {
+                    text: "확인",
+                    onPress: () => navigation.goBack(),
+                  },
+                ],
+                { cancelable: false }
+              );
+            } else {
+              console.error("메시지 전송 실패 (일반 오류):", error);
+              Alert.alert("오류", "메시지 전송에 실패했습니다.");
+              if (optimisticMessage) {
+                setMessages((prev) =>
+                  prev.filter(
+                    (msg) => msg.timestamp !== optimisticMessage.timestamp
+                  )
+                );
+              }
             }
           },
         }
       );
     },
-    [postMessageMutate]
+    [postMessageMutate, navigation]
   );
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       const loadSession = async () => {
         setIsInitializing(true);
         const activeSession = await getActiveSession();
 
         if (!activeSession) {
+          await clearActiveSession();
           Alert.alert("세션 만료", "채팅 세션이 만료되었습니다.");
           navigation.goBack();
           return;
@@ -112,7 +144,6 @@ export default function ChatBotDetail({ navigation }: any) {
     }, [navigation, callPostMessage])
   );
 
-  // useEffect (동일)
   useEffect(() => {
     if (!isInitializing && session) {
       saveActiveSession({ ...session, messages: messages }).catch((err) =>
@@ -125,7 +156,6 @@ export default function ChatBotDetail({ navigation }: any) {
     }
   }, [messages, session, isInitializing]);
 
-  // handleSend 핸들러 (동일)
   const handleSend = () => {
     if (isPending || !session) return;
     const textToSend = messageInput.trim();
@@ -148,7 +178,6 @@ export default function ChatBotDetail({ navigation }: any) {
     );
   };
 
-  // 초기 로딩 화면 (동일)
   if (isInitializing || !session) {
     return (
       <SafeAreaView className="flex-1 justify-center items-center bg-white">
@@ -158,7 +187,6 @@ export default function ChatBotDetail({ navigation }: any) {
     );
   }
 
-  // 렌더링 (동일)
   return (
     <View className="flex-1 bg-white">
       <Header title="챗봇" />
@@ -177,7 +205,6 @@ export default function ChatBotDetail({ navigation }: any) {
           <AssistantHeader variant="compact" />
 
           <View className="p-4">
-            {/* [수정] import한 MessageBubble 컴포넌트 사용 */}
             {messages.map((msg, index) => (
               <MessageBubble key={msg.timestamp + index} message={msg} />
             ))}
@@ -190,7 +217,6 @@ export default function ChatBotDetail({ navigation }: any) {
           </View>
         </ScrollView>
 
-        {/* [수정] import한 MessageInputBar 컴포넌트 사용 */}
         <MessageInputBar
           messageInput={messageInput}
           setMessageInput={setMessageInput}
