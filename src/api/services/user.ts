@@ -12,7 +12,7 @@ export const getMetadata = async (): Promise<ApiResponse<MetadataResponse>> => {
 
 // 현재 로그인된 사용자의 상세 정보를 조회
 export const getMyProfile = async (): Promise<ApiResponse<any>> => {
-  const response = await apiClient.get<ApiResponse<any>>("/users/me");
+  const response = await apiClient.get<ApiResponse<any>>("/users/me/ver2");
   return response.data;
 };
 
