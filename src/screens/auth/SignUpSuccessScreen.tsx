@@ -46,7 +46,7 @@ export default function SignUpSuccessScreen({ navigation }: any) {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white px-16">
       <View className="flex-1 items-center px-6 pt-16">
         {/* 상단 완료 섹션 */}
         <View className="items-center">

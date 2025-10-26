@@ -20,15 +20,17 @@ import {
   useGetMetadata,
 } from "../../hooks/user";
 import { useAuthStore } from "../../store/authStore";
-import { useNavigation } from "@react-navigation/native";
+import Header from "../../components/common/Header";
 
-// 타입 정의 (api/types/user.ts 파일 등에 위치하는 것이 이상적)
 interface Item {
   id: number;
   name: string;
 }
 
-export default function SettingHealthScreen() {
+interface EditProps {
+  navigation: any;
+}
+export default function SettingHealthScreen({ navigation }: EditProps) {
   const {
     data: profileData,
     isLoading: isProfileLoading,
@@ -51,7 +53,7 @@ export default function SettingHealthScreen() {
   const [selectedAllergyIds, setSelectedAllergyIds] = useState<number[]>([]);
   const [otherHealthFactors, setOtherHealthFactors] = useState("");
   const { user } = useAuthStore();
-  const navigation = useNavigation();
+  //const navigation = useNavigation();
   useEffect(() => {
     if (profileData) {
       setNickname(profileData.nickname || "");
@@ -129,13 +131,14 @@ export default function SettingHealthScreen() {
 
   const handleNavigateToEditProfile = () => {
     // 'EditProfile'은 네비게이터에 등록된 실제 화면 이름으로 바꿔주세요.
-    navigation.navigate("EditProfile" as never);
+    navigation.navigate("Profile");
   };
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flex: 1 }}
     >
+      <Header title="개인 정보 수정" />
       <ScrollView
         className="flex-1 bg-white flex"
         contentContainerStyle={{ padding: 24 }}
@@ -143,7 +146,7 @@ export default function SettingHealthScreen() {
       >
         <TouchableOpacity
           onPress={handleNavigateToEditProfile}
-          activeOpacity={0.8} // 터치 시 투명도 (0 ~ 1)
+          activeOpacity={0.8}
         >
           <View className="flex justify-center items-center w-full">
             {user?.profileImageUrl && (

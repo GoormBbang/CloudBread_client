@@ -26,3 +26,9 @@ export const updateMyProfile = async (
   );
   return response.data;
 };
+
+export const logoutUser = async () => {
+  // 로그아웃은 보통 POST를 사용하며, 특별한 응답 본문이 없을 수 있습니다.
+  const response = await apiClient.post("/users/logout");
+  return response.data;
+};
