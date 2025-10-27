@@ -7,7 +7,7 @@ import {
 } from "../types/chatbot";
 
 export interface ChatMessage {
-  id: string;
+  id?: string;
   content: string;
   role: 'user' | 'assistant';
   timestamp: Date;
@@ -20,7 +20,12 @@ export interface SendMessageRequest {
 
 export interface SendMessageResponse {
   message: string;
-  timestamp: string;
+  result: {
+    history:ChatMessage[]
+    response: string;
+    sessionId: string;
+  }
+
 }
 
 //챗봇으로 넘어갈 때 음식 정보 불러오기

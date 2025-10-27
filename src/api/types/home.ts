@@ -1,8 +1,8 @@
 export interface UserInfoType {
   id: number;
   nickname: string;
-  dueDate: number | null;
-  birth_date?: string | null;
+  dueDate: string;
+  pregnancyWeek: number;
   profileImageUrl?: string;
 }
 

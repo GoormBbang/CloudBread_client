@@ -13,7 +13,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend, disabled = false }) => {
     if (inputText.trim() && !disabled) {
       onSend(inputText.trim());
       setInputText("");
-    }
+    } 
   };
 
   return (

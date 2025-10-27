@@ -99,9 +99,6 @@ export const getDailyFoodHistory = async (date: string) => {
   const { data } = await apiClient.get<ApiResponse<any>>(
     `/food-history/today?date=${date}`
   );
-  //   if (data.isSuccess) {
-  //     return data.result;
-  //   }
   return data.result;
 };
 

@@ -76,10 +76,7 @@ export const useNutritionData = (date: string) => {
   const isError = results.some((query) => query.isError);
 
   const aiFeedbackMutation = useMutation({
-    mutationFn: postAIFeedback,
-    onSuccess: (data) => {
-      console.log("AI Feedback", data.FeedbackSummary);
-    },
+    mutationFn: postAIFeedback
   });
 
   return {

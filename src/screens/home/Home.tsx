@@ -220,7 +220,7 @@ export default function Home({ navigation }: HomeProps) {
         <Image source={{ uri: userInfo?.profileImageUrl }} className="w-10 h-10 rounded-full" resizeMode="contain" />
         <View className="flex-col">
         <Text className="text-base font-regular">{userInfo?.nickname}님</Text>
-        <Text className="text-sm text-gray-500">{userInfo?.dueDate}주차</Text>
+        <Text className="text-sm text-gray-500">{userInfo?.pregnancyWeek}주차</Text>
         </View>
         </View>
         <ChevronRight size={16} strokeWidth={3} color="black" />
@@ -375,19 +375,19 @@ export default function Home({ navigation }: HomeProps) {
       <BabyInfoModal
         visible={babyInfoModalVisible}
         onClose={() => setBabyInfoModalVisible(false)}
-        weekNumber={userInfo?.dueDate || 20}
+        weekNumber={userInfo?.pregnancyWeek || 20}
       />
       {/* 엄마 정보 모달 */}
       <MomInfoModal
         visible={momInfoModalVisible}
         onClose={() => setMomInfoModalVisible(false)}
-        weekNumber={userInfo?.dueDate || 20}
+        weekNumber={userInfo?.pregnancyWeek || 20}
       />
       {/* 영양 정보 모달 */}
       <NutritionInfoModal
         visible={nutritionInfoModalVisible}
         onClose={() => setNutritionInfoModalVisible(false)}
-        weekNumber={userInfo?.dueDate || 20}
+        weekNumber={userInfo?.pregnancyWeek || 20}
       />
 
       {/* 음식 상세 영양 정보 모달 */}
