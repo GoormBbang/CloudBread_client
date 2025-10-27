@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, TextInput, TextInputProps } from "react-native";
 
 interface InputProps extends TextInputProps {
-  label: string;
+  label?: string;
   className?: string;
   // disabled prop 추가 (선택적)
   disabled?: boolean;
@@ -19,14 +19,15 @@ const Input = ({
     : "bg-white text-black"; // 활성화 상태 스타일
 
   return (
-    <View className={`${className} w-full`}>
-      <Text
+    <View className={`${className} w-full`}> 
+      {/* <Text
         className={`text-base font-bold mb-2 ${disabled ? "text-gray-400" : "text-gray-800"}`}
       >
         {label}
       </Text>
+       */}
       <TextInput
-        className={`w-full border border-input-gray rounded-lg p-4 text-base ${textInputStyle}`}
+        className={`w-full border border-input-gray rounded-lg px-4 py-1 text-[14px] ${textInputStyle}`}
         editable={!disabled}
         placeholderTextColor={disabled ? "#CBD5E1" : "#9CA3AF"}
         style={{ textAlignVertical: "center" }}
