@@ -4,12 +4,12 @@ import { useAuthStore } from '../store/authStore';
 
 // API 기본 설정
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
-const API_TIMEOUT = 3000; // 3초 (백엔드 서버가 없을 때 빠르게 실패)
+// const API_TIMEOUT = 10000; // 3초 (백엔드 서버가 없을 때 빠르게 실패)
 
 // Axios 인스턴스 생성
 const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
-  timeout: API_TIMEOUT,
+  // timeout: API_TIMEOUT,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -106,5 +106,5 @@ const removeAuthToken = async (): Promise<void> => {
   }
 };
 
-export { setAuthToken, removeAuthToken };
+export { setAuthToken, removeAuthToken, getAuthToken };
 export default apiClient;

@@ -17,6 +17,8 @@
     "all": "^0.0.0",
     "axios": "^1.12.2",
     "babel-preset-expo": "~54.0.0",
+    "date-fns": "^4.1.0",
+    "event-source-polyfill": "^1.0.31",
     "expo": "^54.0.13",
     "expo-constants": "^18.0.9",
     "expo-image-picker": "~17.0.8",

@@ -11,6 +11,8 @@ import ChangeName from "../screens/changeName/ChangeName";
 import Camera from "../screens/camera/Camera";
 import NutritionDetailScreen from "../screens/record/NutritionDetailScreen";
 import Home from "../screens/home/Home";
+import NotificationList from "../screens/notification/NotificationList";
+import ChatBotFood from "../screens/chatbot/ChatBotFood";
 
 export type RootStackNavigationProp =
   NativeStackNavigationProp<RootStackParamList>;
@@ -24,6 +26,8 @@ export type RootStackParamList = {
   Home: undefined;
   Camera: undefined;
   NutritionDetail: undefined;
+  NotificationList: undefined;
+  ChatBotFood: {foodId?: string, photoAnalysisId?: string};
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -46,6 +50,8 @@ export default function RootNavigator() {
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="Camera" component={Camera} />
       <Stack.Screen name="NutritionDetail" component={NutritionDetailScreen} />
+      <Stack.Screen name="NotificationList" component={NotificationList} />
+      <Stack.Screen name="ChatBotFood" component={ChatBotFood} />
     </Stack.Navigator>
   );
 }

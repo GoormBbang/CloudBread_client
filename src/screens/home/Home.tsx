@@ -1,6 +1,6 @@
-import { ChevronRight, CloudSun, Moon, RefreshCw, Sun, User2 } from "lucide-react-native";
+import { Bell, ChevronRight, RefreshCw } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
-import { View, Text, Image, ScrollView, TouchableOpacity, Modal } from "react-native";
+import { View, Text, Image, ScrollView, TouchableOpacity, Modal, Alert } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import Container from "../../components/common/Container";
 import PercentageBar from "../../components/common/PercentageBar";
@@ -13,6 +13,9 @@ import NutritionInfoModal from "../../components/common/modal/NutritionModal";
 import NutritionDetail from "../../components/common/NutritionDetail";
 import Button from "../../components/common/Button";
 import Header from "../../components/common/Header";
+import { startNotificationStream, stopNotificationStream, addNotificationListener } from "../../api/services/notificationStream";
+import { useNotificationStore } from "../../store/notificationStore";
+import NotificationBadge from "../../components/common/NotificationBadge";
 
 
 interface HomeProps {
@@ -32,6 +35,9 @@ export default function Home({ navigation }: HomeProps) {
   const [isOpenFoodDetailModal, setIsOpenFoodDetailModal] = useState(false);
   const [foodInfo,setFoodInfo] = useState<any>();
   const [nutritionInfo, setNutritionInfo] = useState<any>();
+  
+  // 알림 store
+  const addNotification = useNotificationStore((state) => state.addNotification);
 //프로필 정보 조회 api
   const fetchUserInfo = async () => {
     const data = await getUserInfo();
@@ -134,7 +140,40 @@ export default function Home({ navigation }: HomeProps) {
   useEffect(() => {
     fetchTodayNutrition();
     fetchTodayAIRecommendation();
-  }, []);
+    }, []);
+    
+    // 알림 스트림 시작
+    // startNotificationStream();
+    
+    // 알림 수신 리스너 등록
+    // const unsubscribe = addNotificationListener((notification) => {
+    //   console.log('🔔 알림 수신:', notification);
+      
+    //   // store에 알림 추가
+    //   addNotification({
+    //     id: notification.id || notification.lastEventId || Date.now().toString(),
+    //     title: notification.title || '새 알림',
+    //     message: notification.message || notification.body || '',
+    //     type: notification.type,
+    //     data: notification.data,
+    //     lastEventId: notification.lastEventId,
+    //     receivedAt: notification.receivedAt || new Date().toISOString(),
+    //   });
+
+      // 인앱 알림 표시 (선택사항)
+  //     Alert.alert(
+  //       notification.title || '새 알림',
+  //       notification.message || notification.body || '',
+  //       [{ text: '확인' }]
+  //     );
+  //   });
+
+  //   // 컴포넌트 언마운트 시 정리
+  //   return () => {
+  //     unsubscribe();
+  //     stopNotificationStream();
+  //   };
+  
 
   // Profile 화면에서 돌아올 때마다 사용자 정보 새로고침
   useFocusEffect(
@@ -150,7 +189,8 @@ export default function Home({ navigation }: HomeProps) {
       className="flex-1 bg-white w-full"
       showsVerticalScrollIndicator={false}
     >
-      <Header title="홈" />
+       <Header title="홈" />
+      
 <View className="w-full bg-light-pink-2">
       <TouchableOpacity className="w-full h-20 flex flex-row items-center gap-2 px-4 justify-between" onPress={() => navigation.navigate("Profile")}>
         <View className="flex-row items-center gap-2">

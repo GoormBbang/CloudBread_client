@@ -10,6 +10,7 @@ interface ButtonProps {
   icon?: React.ReactNode; // 아이콘 (선택사항)
   style?: ViewStyle; // React Native 스타일
   textColor?: string; // 텍스트 색상 (hex 코드)
+  textSize?: number; // 텍스트 크기 (기본값: 16)
 }
 
 function Button({
@@ -21,6 +22,7 @@ function Button({
   icon,
   style,
   textColor,
+  textSize = 16,
 }: ButtonProps) {
   const variantStyle = {
     SOLID: {
@@ -52,10 +54,10 @@ function Button({
           </View>
         )}
         <Text 
-          className={`text-[16px] font-medium ${variantStyle[variant].color}`}
+          className={`font-medium ${variantStyle[variant].color}`}
           style={[
             textColor ? { color: textColor } : undefined,
-            { textAlignVertical: 'center' }
+            { textAlignVertical: 'center', fontSize: textSize }
           ]}
         >
           {text}

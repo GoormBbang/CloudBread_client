@@ -3,17 +3,13 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Home from "../screens/home/Home";
 import ChatBot from "../screens/chatbot/ChatBot";
 import Camera from "../screens/camera/Camera";
-import Setting from "../screens/setting/Setting";
 import {
   Bot,
   CalendarDays,
   CameraIcon,
   House,
   UserRound,
-  ArrowLeft,
 } from "lucide-react-native";
-import { TouchableOpacity } from "react-native";
-import Record from "../screens/record/Record";
 import RecordNavigator from "./RecordNavigator";
 import SettingNavigator from "./SettingNavigator";
 
