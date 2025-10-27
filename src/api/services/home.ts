@@ -50,7 +50,7 @@ export const postTodayFoodListRefresh = async (): Promise<any> => {
 };
 
 export const getTodayFoodList = async (): Promise<any> => {
-  const response = await apiClient.post('/meal-plans/today');
+  const response = await apiClient.get('/meal-plans/today');
   console.log('🔑 getTodayFoodList:', response.data);
   return response.data;
 };

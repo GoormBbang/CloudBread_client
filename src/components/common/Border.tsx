@@ -5,7 +5,7 @@ interface BorderProps {
   children?: React.ReactNode;
   className?: string;
   borderWidth?: "thin" | "medium" | "thick" | "none";
-  borderColor?: "gray" | "pink" | "blue" | "green" | "red" | "transparent" | "lightPink";
+  borderColor?: "gray" | "pink" | "blue" | "green" | "red" | "transparent" | "lightPink" | "white";
   borderStyle?: "solid" | "dashed" | "dotted";
   borderRadius?: "none" | "sm" | "md" | "lg" | "xl" | "full";
   padding?: "none" | "xs" | "sm" | "md" | "lg" | "xl";
@@ -39,6 +39,7 @@ function Border({
     green: "border-green-500",
     red: "border-red-500",
     lightPink: "border-light-pink",
+    white: "border-white",
   };
 
   // Border style (Note: React Native has limited support for border styles)

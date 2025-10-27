@@ -1,6 +1,6 @@
 import { CameraIcon, ImageIcon, Square, CircleQuestionMark } from 'lucide-react-native';
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, Image, Alert, ActivityIndicator } from "react-native";
+import React, { useState } from "react";
+import { View, Text, ScrollView, Image, Alert, ActivityIndicator } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 import Button from '../../components/common/Button';
 import Border from '../../components/common/Border';
@@ -11,9 +11,13 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { TabParamList } from '../../navigation/TabNavigation';
 import Header from '../../components/common/Header';
+import { CompositeNavigationProp } from '@react-navigation/native';
+import { RootStackParamList } from '../../navigation/RootNavigator';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-type CameraNavigationProp = BottomTabNavigationProp<TabParamList, '촬영'>;
 
+// type CameraNavigationProp = BottomTabNavigationProp<TabParamList, '촬영'>;
+type CameraNavigationProp = CompositeNavigationProp<BottomTabNavigationProp<TabParamList, '촬영'>, NativeStackNavigationProp<RootStackParamList>>;
 export default function Camera() {
   const navigation = useNavigation<CameraNavigationProp>();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -72,12 +76,10 @@ const handleSelectFood = async() => {
       const selectedData = res.result.selected;
       const nutrientsObj = selectedData.nutrients || {};
       
-      console.log('🔍 nutrients 객체:', nutrientsObj);
-      
+    console.log(selectedData);
       // 객체를 배열로 변환
       const nutrientsArray = Object.values(nutrientsObj);
-      console.log('🔍 nutrients 배열:', nutrientsArray);
-      console.log('🔍 nutrients 길이:', nutrientsArray.length);
+     
       
       // 데이터 설정
       setFoodInfo(selectedData);
@@ -263,7 +265,7 @@ const handleSelectFood = async() => {
         detailedNutrients={nutritionInfo}
         onAddToMeal={() => setShowFoodTimeModal(true)}
         onAskAI={() => {
-          console.log('AI에게 물어보기');
+          navigation.navigate('ChatBotFood', {foodId: selectedFood || '', photoAnalysisId: photoAnalysisId || ''});
         }}
         onRetake={handleRetake}
       />

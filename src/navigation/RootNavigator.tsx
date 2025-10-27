@@ -11,6 +11,8 @@ import ChangeName from "../screens/changeName/ChangeName";
 import Camera from "../screens/camera/Camera";
 import NutritionDetailScreen from "../screens/record/NutritionDetailScreen";
 import Home from "../screens/home/Home";
+import NotificationList from "../screens/notification/NotificationList";
+import ChatBotFood from "../screens/chatbot/ChatBotFood";
 import SettingHealthScreen from "../screens/setting/SettingHealthScreen";
 import ChatBotDetail from "../screens/chatbot/ChatBotDetail";
 
@@ -25,6 +27,8 @@ export type RootStackParamList = {
   ChangeName: { nickname?: string };
   Home: undefined;
   Camera: undefined;
+  NotificationList: undefined;
+  ChatBotFood: {foodId?: string, photoAnalysisId?: string};
   NutritionDetail: { date: string };
   EditHealthProfile: undefined;
   ChatBotDetail: undefined;
@@ -50,8 +54,11 @@ export default function RootNavigator() {
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="Camera" component={Camera} />
       <Stack.Screen name="NutritionDetail" component={NutritionDetailScreen} />
+      <Stack.Screen name="NotificationList" component={NotificationList} />
+      <Stack.Screen name="ChatBotFood" component={ChatBotFood} />
       <Stack.Screen name="EditHealthProfile" component={SettingHealthScreen} />
       <Stack.Screen name="ChatBotDetail" component={ChatBotDetail} />
+
     </Stack.Navigator>
   );
 }

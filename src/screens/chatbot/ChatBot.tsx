@@ -18,6 +18,7 @@ import { useCreateChatSession } from "../../hooks/chatbot";
 import { AiChatTopic } from "../../api/types/chatbot";
 
 export default function ChatBot() {
+
   const [message, setMessage] = useState("");
 
   const { mutate: createSession, isPending: isCreatingSession } =
