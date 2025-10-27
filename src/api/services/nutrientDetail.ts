@@ -111,7 +111,7 @@ export const postAIFeedback = async () => {
     "/me/nutrition/feedback",
     null,
     {
-      timeout: 10000,
+      timeout: 20000,
     }
   );
   return data.result;
