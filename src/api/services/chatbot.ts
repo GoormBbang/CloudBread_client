@@ -38,6 +38,7 @@ export const sendChatMessage = async (message: string, sessionId: string) => {
         message,
     });
     return response.data;
+  };
  
 //////아래부터 일반 챗봇//////
   
