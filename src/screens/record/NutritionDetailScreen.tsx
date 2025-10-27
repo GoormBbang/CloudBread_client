@@ -3,13 +3,11 @@ import {
   View,
   Text,
   ScrollView,
-  TouchableOpacity,
   SafeAreaView,
   ActivityIndicator,
-  Image,
 } from "react-native";
 import { useRoute, RouteProp } from "@react-navigation/native";
-import { ChevronLeft, ChevronRight, Bot } from "lucide-react-native";
+import { Bot } from "lucide-react-native";
 import NutrientBalanceBar from "../../components/record/NutrientBalanceBar";
 import { useNutritionData } from "../../hooks/nutrientDetail";
 import { NUTRIENT_NAMES } from "../../constants/nutrientName";
@@ -66,6 +64,7 @@ export default function NutritionDetailScreen() {
   //   });
   // };
 
+  console.log("feedback", feedback);
   if (isLoading) {
     return (
       <SafeAreaView className="flex-1 justify-center items-center bg-gray-50">
@@ -177,9 +176,7 @@ export default function NutritionDetailScreen() {
               </Text>
             ) : (
               <Text className="leading-6">
-                {feedback
-                  ? feedback?.result?.FeedbackSummary
-                  : "오늘 식단에 대한 피드백이 없습니다."}
+                {feedback ? feedback.FeedbackSummary : "오늘 식단에 대한 피드백이 없습니다."}
               </Text>
             )}
           </View>

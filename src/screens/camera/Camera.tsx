@@ -14,6 +14,7 @@ import Header from '../../components/common/Header';
 import { CompositeNavigationProp } from '@react-navigation/native';
 import { RootStackParamList } from '../../navigation/RootNavigator';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import Input from '../../components/common/Input';
 
 
 // type CameraNavigationProp = BottomTabNavigationProp<TabParamList, '촬영'>;
@@ -239,11 +240,12 @@ const handleSelectFood = async() => {
      
      <View className='w-full h-fit flex-row items-center my-4'>
      <CircleQuestionMark size={16} strokeWidth={2} />
-     <Text className='text-[10px] font-medium ml-2'>원하는 음식이 없나요? 챗봇에서 직접 알려주세요.</Text>
+     <Text className='text-[10px] font-medium ml-2'>원하는 음식이 없나요? 직접 입력해주세요!</Text>
      </View>
       </View>
 
-<Button text="챗봇에서 직접입력" onPress={()=>{}} className='h-11 bg-white rounded-[8px] border-[1px] border-[#e46592] mb-2' textColor='#4b5563' icon={<Image source={require('../../../assets/image/bot.png')} style={{ width: 16, height: 16 }} resizeMode="contain" />}/>
+<Input label="음식 이름" className='w-full h-11 bg-white rounded-[8px] border-[1px] border-[#e46592] mb-2' placeholder='음식 이름을 입력해주세요.' />
+
       <Button 
         text={isLoading ? "로딩중..." : "다음"} 
         onPress={handleSelectFood} 

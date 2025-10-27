@@ -9,7 +9,6 @@ import {
   Image,
 } from "react-native";
 import Header from "../../components/common/Header";
-import ChatMessage from "../../components/chatbot/ChatMessage";
 import ChatInput from "../../components/chatbot/ChatInput";
 import {
   ChatMessage as ChatMessageType,
@@ -21,6 +20,7 @@ import { RootStackParamList } from "../../navigation/RootNavigator";
 import Button from "../../components/common/Button";
 import Border from "../../components/common/Border";
 import FoodTimeModal from "../../components/common/modal/FoodTimeModal";
+import MessageBubble from "../../components/chatbot/MessageBubble";
 
 interface NutrientInfo {
   value: number;
@@ -54,7 +54,7 @@ export default function ChatBotFood({ route }: { route: RouteProp<RootStackParam
   const { photoAnalysisId } = route.params;
   const [messages, setMessages] = useState<ChatMessageType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isInitialLoading, setIsInitialLoading] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const flatListRef = useRef<FlatList>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [foodInfo, setFoodInfo] = useState<FoodInfo | null>(null);
@@ -66,19 +66,24 @@ export default function ChatBotFood({ route }: { route: RouteProp<RootStackParam
   }, []);
 
   const loadFoodInfo = async () => {
-    const foodInfo = await postFoodInfo(foodId || '');
-    console.log(foodInfo);
-    if(foodInfo.isSuccess) {
+    try {
+      const foodInfo = await postFoodInfo(foodId || '');
+      if(foodInfo.isSuccess) {
+        setSessionId(foodInfo.result.sessionId);
+        setFoodInfo(foodInfo.result.selectedFood);
+        setFoodNutrients(foodInfo.result.selectedFood.nutrients);
+      }
+    } catch (error) {
+      console.error("음식 정보 로드 실패:", error);
+    } finally {
       setIsInitialLoading(false);
-      setSessionId(foodInfo.result.sessionId);
-      setFoodInfo(foodInfo.result.selectedFood);
-      setFoodNutrients(foodInfo.result.selectedFood.nutrients);
     }
   };
 
 
   // 메시지 전송 처리
   const handleSendMessage = async (text: string) => {
+  
     // 사용자 메시지 추가
     const userMessage: ChatMessageType = {
       id: Date.now().toString(),
@@ -86,8 +91,12 @@ export default function ChatBotFood({ route }: { route: RouteProp<RootStackParam
       role: "user",
       timestamp: new Date(),
     };
+    
 
-    setMessages((prev) => [...prev, userMessage]);
+    setMessages((prev) => {
+      const newMessages = [...prev, userMessage];
+      return newMessages;
+    });
     setIsLoading(true);
 
     // 스크롤을 맨 아래로
@@ -98,8 +107,18 @@ export default function ChatBotFood({ route }: { route: RouteProp<RootStackParam
     try {
       // API 호출하여 봇 응답 받기
 
-      const botMessage = await sendChatMessage(text, sessionId || '');
-      // setMessages((prev) => [...prev, botMessage]);
+      const res = await sendChatMessage(text, sessionId || '');
+      
+      const botMessage: ChatMessageType = {
+        id: Date.now().toString() + "_bot",
+        content: res.result.response,
+        role: "assistant",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => {
+        const newMessages = [...prev, botMessage];
+        return newMessages;
+      });
 
       // 봇 응답 후 스크롤
       setTimeout(() => {
@@ -151,6 +170,8 @@ export default function ChatBotFood({ route }: { route: RouteProp<RootStackParam
     </View>
   );
 
+  console.log(messages);
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -170,10 +191,10 @@ export default function ChatBotFood({ route }: { route: RouteProp<RootStackParam
           <Text className="text-white text-md font-regular">{foodInfo?.name}</Text></View>
         <View className="flex-row justify-between mb-4">
           <Text className="text-white text-md font-bold">예상 칼로리</Text>
-          <Text className="text-white text-md font-regular">{foodInfo?.calories}kcal</Text></View>
+          <Text className="text-white text-md font-regular">{foodInfo?.calories} kcal</Text></View>
         <View className="flex-row justify-between mb-4">
           <Text className="text-white text-md font-bold">주요영양성분</Text>
-          <Text className="text-white text-md font-regular w-3/4">
+          <Text className="text-white text-md font-regular w-3/4 text-right">
             {foodNutrients ? Object.values(foodNutrients).map((nutrient) => nutrient.kname).join(", ") : ""}
           </Text>
         </View>
@@ -186,7 +207,7 @@ export default function ChatBotFood({ route }: { route: RouteProp<RootStackParam
         ref={flatListRef}
         data={messages}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <ChatMessage message={item} />}
+        renderItem={({ item }) => <MessageBubble message={item} />}
         contentContainerStyle={{
           flexGrow: 1,
           paddingHorizontal: 16,
@@ -201,13 +222,6 @@ export default function ChatBotFood({ route }: { route: RouteProp<RootStackParam
 
       {isLoading && (
         <View className="px-4 py-2 flex-row items-center">
-          <View className="w-10 h-10 rounded-full bg-pink-100 mr-2 items-center justify-center">
-            <Image
-              source={require("../../../assets/image/bot.png")}
-              className="w-8 h-8"
-              resizeMode="contain"
-            />
-          </View>
           <View className="bg-gray-100 rounded-2xl px-4 py-3 flex-row items-center">
             <ActivityIndicator size="small" color="#EC4899" />
             <Text className="ml-2 text-gray-600">답변 생성 중...</Text>

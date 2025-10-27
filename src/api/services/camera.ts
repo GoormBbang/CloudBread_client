@@ -195,3 +195,9 @@ export const postSelectedTime = async ({foodId, photoAnalysisId, mealType, intak
   });
   return response.data;
 };
+
+//음식명 직접 입력
+export const getFoodSuggest = async (foodName: string) => {
+  const response = await apiClient.get(`/foods/suggest?q=${foodName}&limit=10`);
+  return response.data;
+};
