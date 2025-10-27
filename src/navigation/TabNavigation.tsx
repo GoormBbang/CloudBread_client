@@ -11,6 +11,7 @@ import {
   UserRound,
 } from "lucide-react-native";
 import Record from "../screens/record/Record";
+import Setting from "../screens/setting/Setting";
 
 export type TabParamList = {
   홈: undefined;

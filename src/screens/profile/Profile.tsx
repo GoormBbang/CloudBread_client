@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { getUserInfo } from "../../api/services/home";
 import { UserInfoType } from "../../api/types/home";
 import { useNavigation, CommonActions, useFocusEffect } from "@react-navigation/native";
-import { getUserProfile, updateProfileImage } from "../../api/services/profile";
+import { deleteUser, getUserProfile, updateProfileImage } from "../../api/services/profile";
 import { UserProfile } from "../../api/types/user";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../navigation/RootNavigator";
@@ -100,6 +100,16 @@ const handleChangeProfileImage = async () => {
   }
 };
 
+const handleDeleteUser = async () => {
+  Alert.alert(
+    '회원탈퇴',
+    '회원탈퇴하시겠습니까?',
+    [{ text: '취소' }, { text: '회원탈퇴', onPress: () => {
+      deleteUser();
+    }}]
+  );
+}
+
 
   return (
     <View className="flex-1 bg-white">
@@ -135,7 +145,9 @@ const handleChangeProfileImage = async () => {
     
 
   <View className="w-full mt-8 items-center justify-center mt-8">
+    <TouchableOpacity onPress={handleDeleteUser}>
   <Text className="text-[13px] font-medium text-[#ef4444]">회원탈퇴</Text>
+  </TouchableOpacity>
 </View>
       </View>
     </View>

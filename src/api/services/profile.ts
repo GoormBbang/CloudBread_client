@@ -54,3 +54,9 @@ export const updateProfileImage = async (imageUri: string) => {
   
   return response.data;
 };
+
+//회원탈퇴
+export const deleteUser = async () => {
+  const response = await apiClient.delete('/users/me');
+  return response.data;
+};

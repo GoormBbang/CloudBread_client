@@ -33,7 +33,7 @@ function Border({
   // Border color styles
   const colorStyles = {
     transparent: "border-transparent",
-    gray: "border-gray-200",
+    gray: "border-gray-300",
     pink: "border-main-pink",
     blue: "border-blue-500",
     green: "border-green-500",

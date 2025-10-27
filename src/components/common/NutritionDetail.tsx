@@ -35,6 +35,7 @@ interface NutritionDetailProps {
   onAddToMeal?: () => void;
   onAskAI?: () => void;
   onRetake?: () => void;
+  onBorder?: boolean;
   
   // 버튼 표시 여부
   showButtons?: boolean;
@@ -52,6 +53,7 @@ export default function NutritionDetail({
   onAddToMeal,
   onAskAI,
   onRetake,
+  onBorder = true,
   showButtons = true,
 }: NutritionDetailProps) {
   const [showAllNutrition, setShowAllNutrition] = useState(false);
@@ -68,51 +70,52 @@ export default function NutritionDetail({
           />
         </View>
       )}
-
-      <View className='w-full h-fit border-t-[1px] border-gray-300 pt-4 px-1'>
+{onBorder && (
+<Border borderColor='gray' />)}
+      <View className='w-full h-fit pt-3 px-1'>
         {/* 음식명 및 기준 */}
         {foodName && (
           <View className='w-full h-fit flex-row items-end'>
-            <Text className='text-[20px] font-medium mr-2'>{foodName}</Text>
+            <Text className='text-[22px] font-medium mr-2'>{foodName}</Text>
             <Text className='text-[14px] font-light text-[#4b5563]'>{portion}</Text>
           </View>
         )}
 
         {/* 주요 영양소 (4개) */}
-        <View className='w-full flex-row justify-between mt-4'>
+        <View className='w-full flex-row justify-between mt-3'>
           {calories !== undefined && (
-            <View className='flex-1 flex-col justify-center items-center'>
+            <View className='flex-1 flex-col justify-center items-center gap-1'>
               <Text className='text-[24px] font-medium text-[#e46592]'>{calories}</Text>
               <Text className='text-[12px] font-light text-[#4b5563]'>칼로리</Text>
             </View>
           )}
           
           {protein !== undefined && (
-            <View className='flex-1 flex-col justify-center items-center'>
-              <Text className='text-[24px] font-medium text-[#e46592]'>{protein}g</Text>
-              <Text className='text-[12px] font-light text-[#4b5563]'>단백질</Text>
+            <View className='flex-1 flex-col justify-center items-center gap-1'>
+              <Text className='text-[24px] font-medium text-[#e46592]'>{protein}</Text>
+              <Text className='text-[12px] font-light text-[#4b5563]'>단백질(g)</Text>
             </View>
           )}
           
           {fat !== undefined && (
-            <View className='flex-1 flex-col justify-center items-center'>
-              <Text className='text-[24px] font-medium text-[#e46592]'>{fat}g</Text>
-              <Text className='text-[12px] font-light text-[#4b5563]'>지방</Text>
+            <View className='flex-1 flex-col justify-center items-center gap-1'>
+              <Text className='text-[24px] font-medium text-[#e46592]'>{fat}</Text>
+              <Text className='text-[12px] font-light text-[#4b5563]'>지방(g)</Text>
             </View>
           )}
           
           {carbs !== undefined && (
-            <View className='flex-1 flex-col justify-center items-center'>
-              <Text className='text-[24px] font-medium text-[#e46592]'>{carbs}g</Text>
-              <Text className='text-[12px] font-light text-[#4b5563]'>탄수화물</Text>
+            <View className='flex-1 flex-col justify-center items-center gap-1'>
+              <Text className='text-[24px] font-medium text-[#e46592]'>{carbs}</Text>
+              <Text className='text-[12px] font-light text-[#4b5563]'>탄수화물(g)</Text>
             </View>
           )}
         </View>
 
         {/* 상세 영양 정보 */}
         {detailedNutrients.length > 0 && (
-          <View className='w-full mt-4'>
-            <Text className='text-[14px] text-[#4b5563] mb-3'>상세 영양 정보</Text>
+          <View className='w-full mt-5'>
+            <Text className='text-[14px] text-[#4b5563] mb-1'>상세 영양 정보</Text>
 
             {detailedNutrients
               .slice(0, showAllNutrition ? detailedNutrients.length : 4)

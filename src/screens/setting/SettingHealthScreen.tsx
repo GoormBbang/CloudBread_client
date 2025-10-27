@@ -21,6 +21,7 @@ import {
 } from "../../hooks/user";
 import { useAuthStore } from "../../store/authStore";
 import Header from "../../components/common/Header";
+import { useNavigation } from "@react-navigation/native";
 
 interface Item {
   id: number;
@@ -53,7 +54,7 @@ export default function SettingHealthScreen({ navigation }: EditProps) {
   const [selectedAllergyIds, setSelectedAllergyIds] = useState<number[]>([]);
   const [otherHealthFactors, setOtherHealthFactors] = useState("");
   const { user } = useAuthStore();
-  //const navigation = useNavigation();
+  
   useEffect(() => {
     if (profileData) {
       setNickname(profileData.nickname || "");
@@ -97,6 +98,7 @@ export default function SettingHealthScreen({ navigation }: EditProps) {
       otherHealthFactors: otherHealthFactors,
     };
     updateProfile(payload);
+   
   };
 
   if (isProfileLoading || isMetadataLoading) {

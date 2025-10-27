@@ -104,7 +104,7 @@ export default function BabyInfoModal({ visible, onClose, weekNumber = 20 }: Bab
             </View>
             <TouchableOpacity
               onPress={handleClose}
-              className="w-8 h-8 rounded-full bg-gray-100 items-center justify-center"
+              className="w-8 h-8 rounded-full bg-gray-100 items-center justify-center mt-[-20px]"
             >
               <X size={20} color="#6B7280" />
             </TouchableOpacity>

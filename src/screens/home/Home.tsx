@@ -1,6 +1,6 @@
-import { Bell, ChevronRight, RefreshCw } from "lucide-react-native";
+import { Bell, ChevronRight, RefreshCw, Loader2, Sun, Cloud, Moon, CloudSun } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
-import { View, Text, Image, ScrollView, TouchableOpacity, Modal, Alert } from "react-native";
+import { View, Text, Image, ScrollView, TouchableOpacity, Modal, Alert, Animated } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import Container from "../../components/common/Container";
 import PercentageBar from "../../components/common/PercentageBar";
@@ -16,6 +16,7 @@ import Header from "../../components/common/Header";
 import { startNotificationStream, stopNotificationStream, addNotificationListener } from "../../api/services/notificationStream";
 import { useNotificationStore } from "../../store/notificationStore";
 import NotificationBadge from "../../components/common/NotificationBadge";
+import FoodTimeModal from "../../components/common/modal/FoodTimeModal";
 
 
 interface HomeProps {
@@ -35,6 +36,9 @@ export default function Home({ navigation }: HomeProps) {
   const [isOpenFoodDetailModal, setIsOpenFoodDetailModal] = useState(false);
   const [foodInfo,setFoodInfo] = useState<any>();
   const [nutritionInfo, setNutritionInfo] = useState<any>();
+  const [isOpenFoodTimeModal, setIsOpenFoodTimeModal] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [rotateAnim] = useState(new Animated.Value(0));
   
   // 알림 store
   const addNotification = useNotificationStore((state) => state.addNotification);
@@ -80,10 +84,29 @@ export default function Home({ navigation }: HomeProps) {
   }
  //오늘의 AI 추천 식단 -> 새로고침
   const fetchTodayFoodListRefresh = async () => {
-    const data = await postTodayFoodListRefresh();
-    if(data.isSuccess) {
-      console.log('오늘의 AI 추천 식단 새로고침:', data.result);
-      fetchTodayAIRecommendation();
+    try {
+      setIsRefreshing(true);
+      setTodayAIRecommendation([]);
+      
+      // 회전 애니메이션 시작
+      Animated.loop(
+        Animated.timing(rotateAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        })
+      ).start();
+      
+      const data = await postTodayFoodListRefresh();
+      if(data.isSuccess) {
+        console.log('오늘의 AI 추천 식단 새로고침:', data.result);
+        await fetchTodayAIRecommendation();
+      }
+    } catch (error) {
+      console.error('❌ 새로고침 실패:', error);
+    } finally {
+      setIsRefreshing(false);
+      rotateAnim.setValue(0);
     }
   }
 
@@ -110,17 +133,17 @@ export default function Home({ navigation }: HomeProps) {
     fetchFoodNutritionDetail(foodId);
   }
   
-  // 식사 타입에 따른 한글 이름 반환
-  const getMealName = (mealType: string) => {
+  // 식사 타입에 따른 한글 이름과 아이콘 반환
+  const getMealInfo = (mealType: string) => {
     switch(mealType) {
       case 'BREAKFAST':
-        return '아침';
+        return { name: '아침', icon: <Sun size={16} color="#e46592" strokeWidth={3} /> };
       case 'LUNCH':
-        return '점심';
-      case 'DINNER':
-        return '저녁';
+        return {  name: '점심', icon: <CloudSun size={16} color="#e46592" strokeWidth={3} />};
+      case 'DINNER':  
+        return { name: '저녁', icon: <Moon size={16} color="#e46592" strokeWidth={3} /> };
       default:
-        return mealType;
+        return { name: mealType, icon: null };
     }
   };
 
@@ -205,7 +228,7 @@ export default function Home({ navigation }: HomeProps) {
       </View>
      
       <View className="px-4 mt-4 w-full">
-          <Text className="text-lg mb-[6px]">이번 주차 팁!</Text>
+          <Text className="text-lg mb-[6px] font-medium text-black ml-1">이번 주차 팁!</Text>
            <View className="flex-row items-center justify-between w-full px-8 gap-3 mb-10">
             <TouchableOpacity 
               className="flex-col items-center"
@@ -236,7 +259,7 @@ export default function Home({ navigation }: HomeProps) {
            <Container className="w-full px-4">
              <View className="flex-row justify-between items-center mb-4">
               <View className="flex-row items-center gap-2">
-               <Text className="text-base font-regular text-[16px] text-black">오늘의 영양 분석</Text>
+               <Text className="text-[16px] font-medium text-black ml-1">오늘의 영양 분석</Text>
                <Text className="text-[12px] font-light text-[#6b7280]">단위: %</Text>
                </View>
                <Text className="text-[12px] font-light text-[#6b7280]">2025.09.20</Text>
@@ -263,25 +286,63 @@ export default function Home({ navigation }: HomeProps) {
              </View>
            </Container>
         </View>
-           <View className="px-4 mt-4 w-full flex-row items-center justify-between">
-            <Text className="text-lg mb-[6px]">오늘의 AI 추천 식단</Text>
-            <TouchableOpacity className="flex-row items-center" onPress={()=>
-              fetchTodayFoodListRefresh()
-            }>
-              <RefreshCw size={12} strokeWidth={3} color="#e46592" style={{ marginRight: 4 }} />
+           <View className="px-4 mt-5 w-full flex-row items-center justify-between">
+            <Text className="text-lg font-medium text-black ml-1">오늘의 AI 추천 식단</Text>
+            <TouchableOpacity 
+              className="flex-row items-center" 
+              onPress={fetchTodayFoodListRefresh}
+              disabled={isRefreshing}
+            >
+              <Animated.View
+                style={{
+                  transform: [{
+                    rotate: rotateAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: ['0deg', '360deg']
+                    })
+                  }],
+                  marginRight: 4
+                }}
+              >
+                <RefreshCw size={12} strokeWidth={3} color="#e46592" />
+              </Animated.View>
               <Text className="text-[#4b5563] text-[14px]">새로고침</Text>
             </TouchableOpacity>
             
            </View>
 
-           <View className="px-4 mt-4 w-full">
-           {todayAIRecommendation.length > 0 ? (
-             todayAIRecommendation.map((meal, index) => (
+           <View className="px-4 mt-2 w-full">
+           {isRefreshing || todayAIRecommendation.length === 0 ? (
+             <View className="mb-6">
+               <Container>
+                 <View className="flex-row items-center justify-center py-8">
+                   <Animated.View
+                     style={{
+                       transform: [{
+                         rotate: rotateAnim.interpolate({
+                           inputRange: [0, 1],
+                           outputRange: ['0deg', '360deg']
+                         })
+                       }],
+                       marginRight: 8
+                     }}
+                   >
+                     <Loader2 size={16} strokeWidth={2.5} color="#e46592" />
+                   </Animated.View>
+                   <Text className="text-center text-[#4b5563]">추천 식단을 불러오는 중...</Text>
+                 </View>
+               </Container>
+             </View>
+           ) : (
+             todayAIRecommendation.map((meal, index) => {
+               const mealInfo = getMealInfo(meal.mealType);
+               return (
                <View key={index} className="mb-6">
                  <Container>
                    <View className="flex-row items-center justify-between w-full">
-                     <View className="flex-row items-center justify-center mb-2">
-                       <Text className="text-[#118270] text-[16px] text-center">{getMealName(meal.mealType)}</Text>
+                     <View className="flex-row items-center gap-2 mb-2">
+                       {mealInfo.icon}
+                       <Text className="text-black text-[16px] text-center">{mealInfo.name}</Text>
                      </View>
                      <View className="flex-row items-center justify-between w-min px-2 py-1.5 bg-[#f9c4d44d] rounded-lg">
                        <Text className="text-[#1f2937] text-[12px]">{meal.totalKcal}kcal</Text>
@@ -304,13 +365,8 @@ export default function Home({ navigation }: HomeProps) {
                    ))}
                  </Container>
                </View>
-             ))
-           ) : (
-             <View className="mb-6">
-               <Container>
-                 <Text className="text-center text-[#4b5563] py-8">추천 식단을 불러오는 중입니다...</Text>
-               </Container>
-             </View>
+               );
+             })
            )}
            </View>
     </ScrollView>
@@ -342,8 +398,8 @@ export default function Home({ navigation }: HomeProps) {
         onRequestClose={() => setIsOpenFoodDetailModal(false)}
       >
         <View className="flex-1 justify-end bg-black/50">
-          <View className="bg-white rounded-t-[20px] max-h-[90%] min-h-[60%]">
-            <View className="flex-row justify-between items-center px-4 py-4 border-b border-gray-200">
+          <View className="bg-white rounded-t-[20px] max-h-[90%] min-h-[65%]">
+            <View className="flex-row justify-between items-center px-5 py-5 border-b border-gray-200">
               <Text className="text-[18px] font-medium">영양 정보</Text>
               <TouchableOpacity onPress={() => setIsOpenFoodDetailModal(false)}>
                 <Text className="text-[16px] text-gray-500">✕</Text>
@@ -368,16 +424,28 @@ export default function Home({ navigation }: HomeProps) {
                     }))
                   }
                   showButtons={true}
+                  onAddToMeal={()=>{setIsOpenFoodTimeModal(true)}}
+                  onBorder={false}
                 />
               )}
-              <View className="py-10">
-                <Button text="식단에 추가" onPress={() => {}} className="w-full h-10" />
-              </View>
+              {/* <View className="py-10">
+                <Button text="식단에 추가" onPress={() => {setIsOpenFoodTimeModal(true)}} className="w-full h-10" />
+              </View> */}
+
+              
             </ScrollView>
            
           </View>
          
         </View>
+
+        <FoodTimeModal
+        visible={isOpenFoodTimeModal}
+        foodId={foodInfo?.foodId}
+        photoAnalysisId={foodInfo?.photoAnalysisId}
+        onClose={() => setIsOpenFoodTimeModal(false)}
+        onSuccess={() => {}}
+        />
       </Modal>
     </>
   );
