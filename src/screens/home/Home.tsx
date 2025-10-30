@@ -1,6 +1,7 @@
 import { Bell, ChevronRight, RefreshCw, Loader2, Sun, Cloud, Moon, CloudSun } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { View, Text, Image, ScrollView, TouchableOpacity, Modal, Alert, Animated } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from "@react-navigation/native";
 import Container from "../../components/common/Container";
 import PercentageBar from "../../components/common/PercentageBar";
@@ -40,6 +41,7 @@ export default function Home({ navigation }: HomeProps) {
   const [isOpenFoodTimeModal, setIsOpenFoodTimeModal] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [rotateAnim] = useState(new Animated.Value(0));
+  const DAILY_REFRESH_KEY = 'aiDietLastRefreshDate';
   
   // 알림 store
   const addNotification = useNotificationStore((state) => state.addNotification);
@@ -82,6 +84,25 @@ export default function Home({ navigation }: HomeProps) {
     if(data.isSuccess) {
       console.log('AI 추천 식단:', data.result.sections);
       setTodayAIRecommendation(data.result.sections);
+    }
+  }
+  // 앱을 하루에 처음 켰을 때만 새로고침 API를 선행 호출한 뒤 AI 식단 조회
+  const ensureDailyRefreshBeforeFetch = async () => {
+    try {
+      const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+      const lastRefreshed = await AsyncStorage.getItem(DAILY_REFRESH_KEY);
+
+      if (lastRefreshed !== today) {
+        // 조용히(로딩 애니메이션 없이) 새로고침 API 호출
+        const res = await postTodayFoodListRefresh();
+        if (res?.isSuccess) {
+          await AsyncStorage.setItem(DAILY_REFRESH_KEY, today);
+        }
+      }
+    } catch (error) {
+      console.error('❌ 일일 최초 새로고침 처리 중 에러:', error);
+    } finally {
+      await fetchTodayAIRecommendation();
     }
   }
  //오늘의 AI 추천 식단 -> 새로고침
@@ -152,7 +173,7 @@ console.log('🔍 todayAIRecommendation:', todayAIRecommendation);
 
   useEffect(() => {
     fetchTodayNutrition();
-    fetchTodayAIRecommendation();
+    ensureDailyRefreshBeforeFetch();
     }, []);
 
   // Profile 화면에서 돌아올 때마다 사용자 정보 새로고침
