@@ -76,8 +76,8 @@ export default function NutritionDetail({
         {/* 음식명 및 기준 */}
         {foodName && (
           <View className='w-full h-fit flex-row items-end'>
-            <Text className='text-[22px] font-medium mr-2'>{foodName}</Text>
-            <Text className='text-[14px] font-light text-[#4b5563]'>{portion}</Text>
+            <Text className='text-[20px] font-medium mr-2'>{foodName}</Text>
+            <Text className='text-[11px] font-light text-[#4b5563]'>{portion}</Text>
           </View>
         )}
 
