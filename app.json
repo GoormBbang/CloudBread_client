@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "scheme": "ten-months-table",
+    "scheme": "cloudbreadclient",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
@@ -41,7 +41,17 @@
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "apiUrl": "http://cloudbread.133.186.213.185.nip.io/api/"
-    }
+      "apiUrl": "http://cloudbread.133.186.213.185.nip.io/api/",
+      "eas": {
+        "projectId": "c302113b-31e3-426d-bc5a-018a3c9f715e"
+      }
+    },
+    "plugins": [
+      ["expo-build-properties", {
+        "android": {
+            "usesCleartextTraffic": true
+        }
+    }]
+  ]
   }
 }
