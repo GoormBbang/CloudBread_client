@@ -54,7 +54,7 @@ export default function SettingHealthScreen({ navigation }: EditProps) {
   const [selectedAllergyIds, setSelectedAllergyIds] = useState<number[]>([]);
   const [otherHealthFactors, setOtherHealthFactors] = useState("");
   const { user } = useAuthStore();
-  
+
   useEffect(() => {
     if (profileData) {
       setNickname(profileData.nickname || "");
@@ -97,8 +97,13 @@ export default function SettingHealthScreen({ navigation }: EditProps) {
       allergyIds: selectedAllergyIds,
       otherHealthFactors: otherHealthFactors,
     };
-    updateProfile(payload);
-   
+    updateProfile(payload, {
+      onSuccess: () => {
+        navigation.navigate("Tab", {
+          screen: "홈",
+        });
+      },
+    });
   };
 
   if (isProfileLoading || isMetadataLoading) {
