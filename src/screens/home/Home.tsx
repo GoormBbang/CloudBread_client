@@ -65,6 +65,7 @@ export default function Home({ navigation }: HomeProps) {
       const data = await getTodayNutrition();
       if(data.isSuccess) {
         setNutritionData(data.result.nutrients);
+        console.log('🔍 nutritionData:', data.result.nutrients);
       }
     } catch (error) {
       console.error('❌ API 호출 실패:', error);
