@@ -9,20 +9,26 @@ interface HeaderProps {
   rightComponent?: React.ReactNode;
 }
 
-export default function Header({ title, leftComponent, rightComponent }: HeaderProps) {
+export default function Header({
+  title,
+  leftComponent,
+  rightComponent,
+}: HeaderProps) {
   const navigation = useNavigation();
-    return (
+  return (
     <View className="w-screen h-24 bg-white flex flex-row items-center justify-between px-4 border-b border-gray-200">
-      <TouchableOpacity className="flex-1 flex-row items-center justify-start mt-8" onPress={() => navigation.goBack()}>
+      <TouchableOpacity
+        className="flex-1 flex-row items-center justify-start mt-8"
+        onPress={() => navigation.goBack()}
+      >
         <ChevronLeft size={24} color="black" />
       </TouchableOpacity>
       <View className="flex-2 items-center justify-center">
-        <Text className="text-lg font-bold text-black text-center mt-8">{title}</Text>
+        <Text className="text-lg font-bold text-black text-center mt-8">
+          {title}
+        </Text>
       </View>
-      <View className="flex-1 flex-row items-center justify-end mt-8">
-      <Bell size={24} color="black" />
-      </View>
+      <View className="flex-1 flex-row items-center justify-end mt-8"></View>
     </View>
   );
 }
-
