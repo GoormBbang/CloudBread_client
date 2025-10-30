@@ -171,6 +171,7 @@ const handleSelectFood = async() => {
       if (!result.canceled && result.assets && result.assets[0]) {
         console.log('이미지 선택됨:', result.assets[0].uri);
         setSelectedImage(result.assets[0].uri);
+        ImageUploadApi(result.assets[0].uri);
         setIsLoading(true);
         setStep(1);
       }
