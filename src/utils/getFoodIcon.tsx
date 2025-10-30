@@ -1,100 +1,122 @@
-// 1. [수정] JSX를 사용하기 위해 React 임포트가 필수입니다.
 import React from "react";
+import { Text, View, Image } from "react-native";
 
-// 2. React Native 컴포넌트 임포트
-import { Text, View } from "react-native";
-
-// 3. lucide-react-native 아이콘 임포트
-import {
-  Soup, // 밥, 국, 찌개용
-  Leaf, // 야채, 샐러드, 김치용
-  Drumstick, // 고기, 닭, 볶음용
-  Fish, // 생선, 연어용
-  Apple, // 과일, 바나나용
-  HelpCircle,
-  Utensils,
-  CookingPot, // 기타, 알 수 없음
-  // (코드에서 사용하지 않는 ChevronLeft, ChevronRight, Bot은 제거해도 됩니다)
-} from "lucide-react-native";
-
-// 4. [수정] 누락되었던 FoodItem 타입 정의 추가
-interface FoodItem {
-  name: string;
-  calories: number;
-  // (이전 코드의 foodId, imageUrl 등 다른 속성이 있다면 여기에 추가하세요)
+interface FoodIconProps {
+ name: string;
+ size?: number;
 }
 
-// 5. getFoodIcon 헬퍼 함수 (수정 없음, 위치만 이동)
-const getFoodIcon = (foodName: string) => {
-  const name = foodName.toLowerCase(); // 소문자로 변환하여 비교
-  const iconSize = 24;
-  const iconColor = "#4B5563"; // gray-600
+const FoodCatogory = ({ name, size }: FoodIconProps) => {
+ const getIconByName = () => {
+  const foodName = name.toLowerCase();
+  
+  let source;
+  let defaultWidth = 21;
+  let defaultHeight = 18;
 
-  // 키워드 기반으로 아이콘 반환
-  if (name.includes("밥") || name.includes("김밥") || name.includes("죽")) {
-    return <CookingPot size={iconSize} color={iconColor} />; // 밥그릇 아이콘으로 Soup 사용
-  }
-  if (name.includes("국") || name.includes("찌개") || name.includes("탕")) {
-    return <Soup size={iconSize} color={iconColor} />;
-  }
-  if (
-    name.includes("샐러드") ||
-    name.includes("야채") ||
-    name.includes("브로콜리") ||
-    name.includes("김치") ||
-    name.includes("나물")
-  ) {
-    return <Leaf size={iconSize} color={iconColor} />;
-  }
-  if (name.includes("닭") || name.includes("치킨") || name.includes("오리")) {
-    return <Drumstick size={iconSize} color={iconColor} />;
-  }
-  if (
-    name.includes("돼지") ||
-    name.includes("소") ||
-    name.includes("고기") ||
-    name.includes("볶음")
-  ) {
-    return <Drumstick size={iconSize} color={iconColor} />;
-  }
-  if (
-    name.includes("연어") ||
-    name.includes("생선") ||
-    name.includes("고등어")
-  ) {
-    return <Fish size={iconSize} color={iconColor} />;
+  if (foodName.includes("볶음")) {
+   source = require("../../assets/icons/foodCategory/fry.png");
+   defaultWidth = 25; defaultHeight = 25;
+  } else if (foodName.includes("튀김")) {
+   source = require("../../assets/icons/foodCategory/fried.png");
+   defaultWidth = 25; defaultHeight = 25;
+  } else if (foodName.includes("구이")) {
+   source = require("../../assets/icons/foodCategory/roast.png");
+   defaultWidth = 23; defaultHeight = 23;
+  } else if (foodName.includes("국") || foodName.includes("탕")) {
+   source = require("../../assets/icons/foodCategory/pot-of-food.png");
+   defaultWidth = 24; defaultHeight = 24;
+  } else if (foodName.includes("찌개") || foodName.includes("전골")) {
+   source = require("../../assets/icons/foodCategory/ep_food.png");
+   defaultWidth = 21; defaultHeight = 18;
+  } else if (foodName.includes("밥") || foodName.includes("김밥")) {
+   source = require("../../assets/icons/foodCategory/rice.png");
+   defaultWidth = 24; defaultHeight = 24;
+  } else if (foodName.includes("면") || foodName.includes("만두")) {
+   source = require("../../assets/icons/foodCategory/noodle.png");
+   defaultWidth = 21; defaultHeight = 18;
+  } else if (foodName.includes("죽") || foodName.includes("스프")) {
+   source = require("../../assets/icons/foodCategory/Group.png");
+   defaultWidth = 21; defaultHeight = 18;
+  } else if (foodName.includes("빵") || foodName.includes("과자")) {
+   source = require("../../assets/icons/foodCategory/bread.png");
+   defaultWidth = 21; defaultHeight = 18;
+  } else if (foodName.includes("음료") || foodName.includes("차")) {
+   source = require("../../assets/icons/foodCategory/drink.png");
+   defaultWidth = 23; defaultHeight = 23;
+  } else if (foodName.includes("생채") || foodName.includes("무침") || foodName.includes("나물") || foodName.includes("숙채") || foodName.includes("채소") || foodName.includes("해조")) {
+   source = require("../../assets/icons/foodCategory/natural-food.png");
+   defaultWidth = 21; defaultHeight = 18;
+  } else if (foodName.includes("유제품") || foodName.includes("빙과")) {
+   source = require("../../assets/icons/foodCategory/organic-food.png");
+   defaultWidth = 21; defaultHeight = 18;
+  } else if (foodName.includes("조림") || foodName.includes("찜")) {
+   source = require("../../assets/icons/foodCategory/steamed.png");
+   defaultWidth = 21; defaultHeight = 18;
+  } else if (foodName.includes("전") || foodName.includes("적") || foodName.includes("부침")) {
+   source = require("../../assets/icons/foodCategory/pizza.png");
+   defaultWidth = 21; defaultHeight = 18;
+  } else if (foodName.includes("김치")) {
+   source = require("../../assets/icons/foodCategory/kimchi.png");
+   defaultWidth = 21; defaultHeight = 18;
+  } else if (foodName.includes("장") || foodName.includes("양념")) {
+   source = require("../../assets/icons/foodCategory/sauce.png");
+   defaultWidth = 21; defaultHeight = 18;
+  } else if (foodName.includes("장아찌") || foodName.includes("절임")) {
+   source = require("../../assets/icons/foodCategory/jang-ajji.png");
+   defaultWidth = 21; defaultHeight = 18;
+  } else if (foodName.includes("젓갈")) {
+   source = require("../../assets/icons/foodCategory/jeotgal.png");
+   defaultWidth = 21; defaultHeight = 18;
+  } else if (foodName.includes("생선") || foodName.includes("어류") || foodName.includes("육류") || foodName.includes("고기")) {
+   source = require("../../assets/icons/foodCategory/fish.png");
+   defaultWidth = 21; defaultHeight = 18;
+  } else if (foodName.includes("곡류") || foodName.includes("서류")) {
+   source = require("../../assets/icons/foodCategory/raw-rice.png");
+   defaultWidth = 21; defaultHeight = 18;
+  } else if (foodName.includes("과일")) {
+   source = require("../../assets/icons/foodCategory/fruit.png");
+   defaultWidth = 21; defaultHeight = 18;
+  } else if (foodName.includes("두류") || foodName.includes("견과") || foodName.includes("종실")) {
+   source = require("../../assets/icons/foodCategory/peanut.png");
+   defaultWidth = 21; defaultHeight = 18;
+  } else {
+   source = require("../../assets/icons/foodCategory/natural-food.png");
+   defaultWidth = 21; defaultHeight = 18;
   }
 
-  if (
-    name.includes("바나나") ||
-    name.includes("사과") ||
-    name.includes("과일")
-  ) {
-    return <Apple size={iconSize} color={iconColor} />;
-  }
+  const style = {
+   width: size ? size : defaultWidth,
+   height: size ? size : defaultHeight,
+ };
 
-  // 일치하는 키워드가 없으면 기본 아이콘 (물음표)
-  return <Utensils size={iconSize} color={iconColor} />;
-};
+  return <Image source={source} style={style} resizeMode="contain" />;
+ };
 
-// 6. MealItem 컴포넌트
+ return getIconByName();
+}
+
+interface FoodItem {
+ name: string;
+ calories: number;
+}
+
 const MealItem = ({ name, calories }: FoodItem) => {
-  // 헬퍼 함수를 호출하여 음식 이름에 맞는 아이콘을 가져옵니다.
-  const foodIcon = getFoodIcon(name);
 
-  return (
-    <View className="bg-[#F9FAFB] p-3 rounded-lg flex-row items-center mb-2">
-      {/* 스크린샷과 동일하게 아이콘을 회색 배경의 박스 안에 표시합니다. */}
-      <View className="w-10 h-10 bg-gray-200 rounded-lg mr-3 justify-center items-center">
-        {foodIcon}
-      </View>
-      <View>
-        <Text className="font-semibold">{name} </Text>
-        <Text className="text-gray-500">{calories} kcal</Text>
-      </View>
-    </View>
-  );
+ return (
+  <View className="bg-[#F9FAFB] p-3 rounded-lg flex-row items-center mb-2">
+   
+   <View className="w-10 h-10 bg-gray-200 rounded-lg mr-3 justify-center items-center">
+    <FoodCatogory name={name} size={24} />
+   </View>
+
+   <View>
+    <Text className="font-semibold">{name} </Text>
+    <Text className="text-gray-500">{calories} kcal</Text>
+   </View>
+  </View>
+ );
 };
 
-// 7. [추가] 컴포넌트를 다른 파일에서 사용할 수 있도록 export
 export default MealItem;
+
