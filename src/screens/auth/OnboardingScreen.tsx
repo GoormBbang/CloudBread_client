@@ -12,6 +12,7 @@ import SocialLoginButton, {
   AuthType,
 } from "../../components/auth/SocialLoginButton";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Constants from "expo-constants";
 import { WebView, WebViewNavigation } from "react-native-webview";
 const backgroundImage = require("../../../assets/image/signup/OnboardingBack.png");
 const logoImage = require("../../../assets/image/signup/Logo.png");
@@ -19,8 +20,12 @@ const iconNutrition = require("../../../assets/icons/auth/onboarding-nutrition.p
 const iconHealth = require("../../../assets/icons/auth/onboarding-health.png");
 const iconBaby = require("../../../assets/icons/auth/onboarding-baby.png");
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000";
-const DEEP_LINK_SCHEME = "ten-months-table://";
+const API_BASE_URL =
+  process.env.EXPO_PUBLIC_API_URL ||
+  (Constants?.expoConfig?.extra as any)?.apiUrl ||
+  "http://10.0.2.2:3000";
+const DEEP_LINK_SCHEME = "CloudBread_client://";
+
 const OAUTH_URLS: Record<AuthType, string> = {
   KAKAO: `${API_BASE_URL}/oauth2/authorization/kakao`,
   NAVER: `${API_BASE_URL}/oauth2/authorization/naver`,
@@ -196,6 +201,10 @@ export default function OnboardingScreen({ navigation }: any) {
             incognito
             injectedJavaScript={INJECTED_JAVASCRIPT}
             onMessage={onMessage}
+            mixedContentMode="always"
+            originWhitelist={["*"]}
+            thirdPartyCookiesEnabled
+            domStorageEnabled
           />
         </SafeAreaView>
       </Modal>

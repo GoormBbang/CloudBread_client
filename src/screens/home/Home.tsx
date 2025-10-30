@@ -17,6 +17,7 @@ import { startNotificationStream, stopNotificationStream, addNotificationListene
 import { useNotificationStore } from "../../store/notificationStore";
 import NotificationBadge from "../../components/common/NotificationBadge";
 import FoodTimeModal from "../../components/common/modal/FoodTimeModal";
+import FoodCatogory from "../../components/common/FoodCatogory";
 
 
 interface HomeProps {
@@ -65,6 +66,7 @@ export default function Home({ navigation }: HomeProps) {
       const data = await getTodayNutrition();
       if(data.isSuccess) {
         setNutritionData(data.result.nutrients);
+        console.log('🔍 nutritionData:', data.result.nutrients);
       }
     } catch (error) {
       console.error('❌ API 호출 실패:', error);
@@ -109,6 +111,7 @@ export default function Home({ navigation }: HomeProps) {
       rotateAnim.setValue(0);
     }
   }
+console.log('🔍 todayAIRecommendation:', todayAIRecommendation);
 
   //오늘의 AI 추천 식단 -> 상세 음식 영양 정보 조회 api
   const fetchFoodNutritionDetail = async (foodId: string) => {
@@ -147,56 +150,10 @@ export default function Home({ navigation }: HomeProps) {
     }
   };
 
-  // 음식 카테고리에 따른 배경색 반환
-  const getCategoryColor = (category: string) => {
-    const colors: { [key: string]: string } = {
-      '밥': '#89b9ad',
-      '국': '#e46592',
-      '반찬': '#4ECDC4',
-      '김치': '#FF6B6B',
-      '과일': '#FFD93D',
-      '기타': '#95a5a6'
-    };
-    return colors[category] || '#89b9ad';
-  };
-
   useEffect(() => {
     fetchTodayNutrition();
     fetchTodayAIRecommendation();
     }, []);
-    
-    // 알림 스트림 시작
-    // startNotificationStream();
-    
-    // 알림 수신 리스너 등록
-    // const unsubscribe = addNotificationListener((notification) => {
-    //   console.log('🔔 알림 수신:', notification);
-      
-    //   // store에 알림 추가
-    //   addNotification({
-    //     id: notification.id || notification.lastEventId || Date.now().toString(),
-    //     title: notification.title || '새 알림',
-    //     message: notification.message || notification.body || '',
-    //     type: notification.type,
-    //     data: notification.data,
-    //     lastEventId: notification.lastEventId,
-    //     receivedAt: notification.receivedAt || new Date().toISOString(),
-    //   });
-
-      // 인앱 알림 표시 (선택사항)
-  //     Alert.alert(
-  //       notification.title || '새 알림',
-  //       notification.message || notification.body || '',
-  //       [{ text: '확인' }]
-  //     );
-  //   });
-
-  //   // 컴포넌트 언마운트 시 정리
-  //   return () => {
-  //     unsubscribe();
-  //     stopNotificationStream();
-  //   };
-  
 
   // Profile 화면에서 돌아올 때마다 사용자 정보 새로고침
   useFocusEffect(
@@ -339,7 +296,7 @@ export default function Home({ navigation }: HomeProps) {
                return (
                <View key={index} className="mb-6">
                  <Container>
-                   <View className="flex-row items-center justify-between w-full">
+                   <View className="flex-row items-center justify-between w-full mb-2">
                      <View className="flex-row items-center gap-2 mb-2">
                        {mealInfo.icon}
                        <Text className="text-black text-[16px] text-center">{mealInfo.name}</Text>
@@ -352,10 +309,10 @@ export default function Home({ navigation }: HomeProps) {
                    {meal.items.map((food, foodIndex) => (
                      <TouchableOpacity key={foodIndex} className="flex-row items-center mb-2"  onPress={()=>{onClickFoodDetail(food.foodId.toString());}}>
                        <View 
-                         className='w-12 h-12 rounded-[4px] flex items-center justify-center mr-2'
-                         style={{ backgroundColor: getCategoryColor(food.foodCategory) }}
+                         className='w-11 h-11 rounded-[4px] flex items-center justify-center mr-2'
+                         style={{ backgroundColor: "#89B9AD80" }}
                        >
-                         <Text className="text-white text-[12px] text-center">{food.foodCategory}</Text>
+                        <FoodCatogory category={food.foodCategory} />
                        </View>
                        <View className="flex-col gap-1 flex-1" >
                          <Text numberOfLines={1} ellipsizeMode="tail">{food.name}</Text>

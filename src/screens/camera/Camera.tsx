@@ -51,7 +51,7 @@ type suggestionType = {
 export default function Camera() {
   const navigation = useNavigation<CameraNavigationProp>();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0);
   const [selectedFood, setSelectedFood] = useState<string | null>(null);
   const [showFoodTimeModal, setShowFoodTimeModal] = useState(false);
   const [candidates, setCandidates] = useState<any[]>([]);
@@ -69,7 +69,7 @@ export default function Camera() {
       return () => {
         // 다른 탭으로 이동할 때 모든 상태 초기화
         setSelectedImage(null);
-        setStep(1);
+        setStep(0);
         setSelectedFood(null);
         setShowFoodTimeModal(false);
         setCandidates([]);
@@ -189,6 +189,7 @@ export default function Camera() {
       if (!result.canceled && result.assets && result.assets[0]) {
         console.log("이미지 선택됨:", result.assets[0].uri);
         setSelectedImage(result.assets[0].uri);
+        ImageUploadApi(result.assets[0].uri);
         setIsLoading(true);
         setStep(1);
       }
