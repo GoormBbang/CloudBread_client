@@ -35,7 +35,7 @@ export default function FoodCatogory({ category }: { category: string }) {
     case "찜류" :
         return <Image source={require("../../../assets/icons/foodCategory/steamed.png")} style={{ width: 22, height: 22 }} />;
     case "죽 및 스프류" :
-        return <Image source={require("../../../assets/icons/foodCategory/Group.svg")} style={{ width: 21, height: 18 }} />;
+        return <Image source={require("../../../assets/icons/foodCategory/Group.png")} style={{ width: 21, height: 18 }} />;
     case "김치류" : //
         return <Image source={require("../../../assets/icons/foodCategory/kimchi.png")} style={{ width: 21, height: 18 }} />;
     case "장류, 양념류" :

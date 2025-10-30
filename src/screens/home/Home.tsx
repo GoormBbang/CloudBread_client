@@ -18,6 +18,7 @@ import { useNotificationStore } from "../../store/notificationStore";
 import NotificationBadge from "../../components/common/NotificationBadge";
 import FoodTimeModal from "../../components/common/modal/FoodTimeModal";
 import FoodCatogory from "../../components/common/FoodCatogory";
+import { getFormattedToday } from "../../utils/getDate";
 
 
 interface HomeProps {
@@ -219,7 +220,7 @@ console.log('🔍 todayAIRecommendation:', todayAIRecommendation);
                <Text className="text-[16px] font-medium text-black ml-1">오늘의 영양 분석</Text>
                <Text className="text-[12px] font-light text-[#6b7280]">단위: %</Text>
                </View>
-               <Text className="text-[12px] font-light text-[#6b7280]">2025.09.20</Text>
+               <Text className="text-[12px] font-light text-[#6b7280]">{getFormattedToday()}</Text>
              </View>
              <View className="flex-row justify-around items-center">
                <PercentageBar 

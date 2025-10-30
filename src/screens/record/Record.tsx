@@ -18,6 +18,7 @@ import {
 } from "../../hooks/nutrientDetail";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../navigation/RootNavigator";
+import { getCalendarFood } from "../../utils/getCalendarFood";
 //import { RecordStackParamList } from "../../navigation/RecordNavigator";
 
 type NutritionDetail = NativeStackNavigationProp<
@@ -212,7 +213,7 @@ export default function Record() {
               className="bg-white rounded-lg p-2 px-3 border border-gray-200"
             >
               <Text>
-                {food.category === "밥류" ? "🍚" : "🍲"} {food.foodName}{" "}
+                {getCalendarFood(food.category)} {food.foodName}{" "}
                 <Text className="text-gray-500">{food.calories} kcal</Text>
               </Text>
             </View>
