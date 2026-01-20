@@ -19,3 +19,26 @@
 ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![Figma](https://img.shields.io/badge/figma-%23F24E1E.svg?style=for-the-badge&logo=figma&logoColor=white)
 ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)
+
+## 3. 참여자
+<table align="center">
+    <tr>
+        <th colspan="2" style="font-size:18px;">Frontend</th>
+    </tr>
+    <tr align="center">
+        <td><b>강예은</b></td>
+        <td><b>이시영</b></td>
+    </tr>
+    <tr align="center">
+        <td>
+            <img src="https://github.com/Kangyeeun0.png" width="100" style="border-radius: 50%;">
+            <br>
+            <a href="https://github.com/Kangyeeun0"><i>Kangyeeun0</i></a>
+        </td>
+        <td>
+            <img src="https://github.com/naraeng.png" width="100" style="border-radius: 50%;">
+            <br>
+            <a href="https://github.com/naraeng"><i>Yeong-si</i></a>
+        </td>
+    </tr>
+</table>
